@@ -1,0 +1,83 @@
+# 服务器 SSL配置
+server:
+  ssl:
+    # 是否启用 HTTPS 协议
+    enabled: ${SSL_ENABLED:true}
+    # SSL 证书文件路径
+    certificate: ${SSL_CERT_PATH}
+    # SSL 私钥文件路径
+    certificate-private-key: ${SSL_KEY_PATH}
+
+# Spring 核心配置
+spring:
+  # 数据源配置（MySQL）
+  datasource:
+    # JDBC 驱动类
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据库连接 URL
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:oa_per}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    # 数据库用户名
+    username: ${MYSQL_USER:root}
+    # 数据库密码
+    password: ${MYSQL_PASSWORD}
+  # Redis 配置
+  data:
+    redis:
+      # Redis 主机地址
+      host: ${REDIS_HOST:localhost}
+      # Redis 端口号
+      port: ${REDIS_PORT:6379}
+      # Redis 密码
+      password: ${REDIS_PASSWORD:}
+      # 使用的数据库索引
+      database: ${REDIS_DB:5}
+      lettuce:
+        pool:
+          # 连接池最大连接数
+          max-active: 8
+          # 连接池最大空闲连接数
+          max-idle: 4
+          # 连接池最小空闲连接数
+          min-idle: 0
+          # 获取连接最大等待时间（-1 表示无限制）
+          max-wait: -1ms
+  # 邮件配置（163 SMTP）
+  mail:
+    # SMTP 服务器地址
+    host: smtp.163.com
+    # SMTP 端口
+    port: 465
+    # 发件人邮箱账号
+    username: ${MAIL_USERNAME}
+    # 发件人邮箱授权码
+    password: ${MAIL_PASSWORD}
+    # 默认编码
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          # 启用 SMTP 认证
+          auth: true
+          ssl:
+            # 启用 SSL
+            enable: true
+          socketFactory:
+            # SSL Socket 工厂类
+            class: javax.net.ssl.SSLSocketFactory
+            # SSL 端口
+            port: 465
+          starttls:
+            # 启用 STARTTLS
+            enable: true
+
+# 日志级别配置
+logging:
+  level:
+    # 全局默认日志级别
+    root: info
+    # 项目包日志级别
+    com.oa_server: debug
+    # Spring Web 日志级别
+    org.springframework.web: debug
+    # MyBatis-Plus 日志级别
+    com.baomidou.mybatisplus: debug

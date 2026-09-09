@@ -1,1 +1,47 @@
+# Spring Boot 核心配置
+spring:
+  profiles:
+    # 激活的环境（dev-开发，prod-生产）
+    active: dev
+  application:
+    # 应用名称
+    name: oa_server
 
+# MyBatis-Plus 配置
+mybatis-plus:
+  # Mapper XML 文件路径
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    # 开启下划线转驼峰映射
+    map-underscore-to-camel-case: true
+    # 控制台输出 SQL 日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 主键自增策略
+      id-type: auto
+      # 逻辑删除字段名
+      logic-delete-field: isDeleted
+      # 删除时字段值
+      logic-delete-value: 1
+      # 未删除时字段值
+      logic-not-delete-value: 0
+
+# 服务器配置
+server:
+  # 应用端口号
+  port: 8097
+
+# MinIO 对象存储配置
+oa_server:
+  minio:
+    # MinIO 服务地址
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    # 访问密钥
+    access-key: ${MINIO_ACCESS_KEY:}
+    # 私有密钥
+    secret-key: ${MINIO_SECRET_KEY:}
+    # 存储桶名称
+    bucket: ${MINIO_BUCKET:}
+    # 访问 URL 前缀
+    url-prefix: ${MINIO_URL_PREFIX:/minio}
