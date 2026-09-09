@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa_server.module.emp.mapper.EmpMapper">
+
+    <!-- 通用结果映射 -->
+    <resultMap id="EmpResultMap" type="com.oa_server.module.emp.entity.Emp">
+        <id column="id" property="id"/>
+        <result column="emp_no" property="empNo"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="avatar" property="avatar"/>
+        <result column="password" property="password"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="job_id" property="jobId"/>
+        <result column="hire_date" property="hireDate"/>
+        <result column="role_type" property="roleType"/>
+        <result column="account_status" property="accountStatus"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="id_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <!-- 根据邮箱查询用户 -->
+    <select id="findByEmail" resultMap="EmpResultMap">
+        SELECT * FROM `emp`
+        WHERE is_deleted = 0 AND email = #{email}
+            LIMIT 1
+    </select>
+
+</mapper>
