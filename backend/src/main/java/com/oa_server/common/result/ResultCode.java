@@ -23,7 +23,14 @@ public enum ResultCode {
     NOT_FOUND(1004, "资源不存在"),
     METHOD_NOT_ALLOWED(1005, "请求方法不支持"),
     SYSTEM_ERROR(1006, "系统繁忙，请稍后再试"),
-    TOO_MANY_REQUESTS(1007, "请求过于频繁，请稍后再试");
+    TOO_MANY_REQUESTS(1007, "请求过于频繁，请稍后再试"),
+
+    /* 认证模块 2xxx */
+    CODE_SEND_TOO_FREQUENT(2001, "验证码发送过于频繁，请60秒后再试"),
+    ACCOUNT_DISABLED(2002, "账号已被禁用"),
+    ACCOUNT_LOGIN_ELSEWHERE(2003, "当前账号已在其他设备登录，您已被强制下线"),
+    EMAIL_SEND_FAILED(2004, "邮件发送失败，请检查邮箱地址或联系管理员")
+    ;
 
     private final Integer code;
     private final String message;
