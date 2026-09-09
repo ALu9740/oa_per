@@ -8,6 +8,19 @@ public class OaServerApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(OaServerApplication.class, args);
+        System.out.println("""
+                
+          ###    ###    ###    #####  ###   
+         #   #  #   #   #   #  #      #   # 
+         #   #  #   #   #   #  #      #   # 
+         #   #  #####   ####   ###    ####  
+         #   #  #   #   #      #      #  #  
+         #   #  #   #   #      #      #   # 
+          ###   #   #   #      #####  #   # 
+                
+          :: OA_PER v1.0  ::
+          ======================================================
+          """);
     }
 
 }
