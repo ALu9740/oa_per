@@ -5,10 +5,7 @@ import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 认证接口
@@ -26,9 +23,19 @@ public class AuthController {
     /**
      * 发送验证码
      */
-    @PostMapping("/sendCode")
+    @PostMapping("/send-code")
     public Result<Void> sendCode(@Valid @RequestBody SendCodeDTO sendCodeDTO) {
         authService.sendCode(sendCodeDTO);
         return Result.success("验证码已发送", null);
     }
+
+    /**
+     * 校验验证码
+     */
+    @GetMapping("/verify-code")
+    public Result<Boolean> verifyCode(@RequestParam String email, @RequestParam String code) {
+        return Result.success(authService.verifyCode(email, code));
+    }
+
+
 }

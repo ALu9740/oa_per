@@ -16,4 +16,13 @@ public interface AuthService {
      * @param sendCodeDTO 发送验证信息
      */
     void sendCode(SendCodeDTO sendCodeDTO);
+
+    /**
+     * 校验验证码
+     *
+     * @param email 邮箱
+     * @param code 验证码
+     * @return 是否校验通过
+     */
+    Boolean verifyCode(String email, String code);
 }

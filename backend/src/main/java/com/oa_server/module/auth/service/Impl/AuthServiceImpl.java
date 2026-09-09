@@ -1,5 +1,6 @@
 package com.oa_server.module.auth.service.Impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.SendCodeDTO;
@@ -59,6 +60,18 @@ public class AuthServiceImpl implements AuthService {
         sendVerificationEmail(email, code);
         stringRedisTemplate.opsForValue().set(limitKey, "1", LIMIT_TTL);
         log.info("[验证码] 验证码已发送: email={}", email);
+    }
+
+    @Override
+    public Boolean verifyCode(String email, String code) {
+        if (StrUtil.hasBlank(email, code)) {
+            return false;
+        }
+        String cached = stringRedisTemplate.opsForValue().get(CODE_KEY_PREFIX + email);
+        if (cached == null) {
+            throw new BusinessException(ResultCode.CODE_INVALID);
+        }
+        return cached.equals(code);
     }
 
     /**
