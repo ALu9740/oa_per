@@ -40,7 +40,7 @@ public class MyBatisPlusConfig {
                 LocalDateTime now = LocalDateTime.now();
                 this.strictInsertFill(metaObject, "createdAt", LocalDateTime.class, now);
                 this.strictInsertFill(metaObject, "updatedAt", LocalDateTime.class, now);
-                this.strictInsertFill(metaObject, "deleted", Integer.class, 0);
+                this.strictInsertFill(metaObject, "isDeleted", Integer.class, 0);
             }
 
             @Override
