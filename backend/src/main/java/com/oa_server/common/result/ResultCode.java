@@ -35,6 +35,7 @@ public enum ResultCode {
     EMAIL_EXISTS(2007, "邮箱已被注册"),
     ACCOUNT_LOCKED(2008, "账号已被锁定，请15分钟后再试"),
     EMAIL_OR_PASSWORD_ERROR(2009, "邮箱或密码错误"),
+    EMAIL_NOT_FOUND(2010, "邮箱不存在"),
     ;
 
     private final Integer code;

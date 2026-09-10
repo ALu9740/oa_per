@@ -52,4 +52,11 @@
         WHERE id = #{id} AND is_deleted = 0 AND account_status = 2
     </update>
 
+    <!-- 重置密码 -->
+    <update id="resetPassword">
+        UPDATE `emp`
+        SET password = #{password}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
 </mapper>

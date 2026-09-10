@@ -2,6 +2,7 @@ package com.oa_server.module.auth.service;
 
 import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
+import com.oa_server.module.auth.dto.ResetPasswordDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.vo.LoginVo;
 
@@ -44,4 +45,11 @@ public interface AuthService {
      * @return 登录 VO
      */
     LoginVo login(LoginDTO loginDTO);
+
+    /**
+     * 重置密码
+     *
+     * @param resetPasswordDTO  重置密码 DTO
+     */
+    void resetPassword(ResetPasswordDTO resetPasswordDTO);
 }

@@ -6,6 +6,7 @@ import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
 import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
+import com.oa_server.module.auth.dto.ResetPasswordDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
 import com.oa_server.module.auth.vo.LoginVo;
@@ -88,6 +89,15 @@ public class AuthController {
     @PostMapping("/login")
     public Result<LoginVo> login(@Valid @RequestBody LoginDTO loginDTO){
         return Result.success(authService.login(loginDTO));
+    }
+
+    /**
+     * 重置密码
+     */
+    @PostMapping("/reset-password")
+    public Result<Boolean> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        authService.resetPassword(resetPasswordDTO);
+        return Result.success(true);
     }
 
     private String getClientIp(HttpServletRequest request) {

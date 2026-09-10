@@ -6,6 +6,7 @@ import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
+import com.oa_server.module.auth.dto.ResetPasswordDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
 import com.oa_server.module.auth.vo.LoginVo;
@@ -157,6 +158,27 @@ public class AuthServiceImpl implements AuthService {
         log.info("[登录] 用户登录成功: userId={}, email={}", emp.getId(), email);
 
         return buildLoginVO(emp);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        //校验验证码
+        if(!verifyCode(resetPasswordDTO.getEmail(),resetPasswordDTO.getCode())){
+            throw new BusinessException(ResultCode.CODE_NOT_MATCH);
+        }
+        //校验邮箱是否存在
+        Emp emp = empMapper.findByEmail(resetPasswordDTO.getEmail());
+        if(emp == null){
+            throw new BusinessException(ResultCode.EMAIL_NOT_FOUND);
+        }
+        //更新密码
+        emp.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        empMapper.resetPassword(emp);
+
+        //删除已使用验证码
+        stringRedisTemplate.delete(CODE_KEY_PREFIX + resetPasswordDTO.getEmail());
+
+        log.info("[重置密码] 员工密码已重置: userId={}, email={}", emp.getId(), emp.getEmail());
     }
 
     /**
