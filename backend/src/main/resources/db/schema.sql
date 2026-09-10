@@ -29,7 +29,7 @@ CREATE TABLE job (
 CREATE TABLE emp (
                      id             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '员工ID',
                      emp_no         VARCHAR(20)  NOT NULL                COMMENT '员工编号（唯一）',
-                     name           VARCHAR(50)  NOT NULL                COMMENT '姓名',
+                     name           VARCHAR(50)                          COMMENT '姓名',
                      gender         TINYINT(1)                           COMMENT '性别（0-女，1-男）',
                      phone          VARCHAR(20)                          COMMENT '手机号',
                      email          VARCHAR(50)                          COMMENT '邮箱',
@@ -39,7 +39,7 @@ CREATE TABLE emp (
                      job_id         BIGINT                               COMMENT '职位ID',
                      hire_date      DATE                                 COMMENT '入职时间',
                      role_type      TINYINT                              COMMENT '角色类型（0-普通员工、1-管理员）',
-                     account_status TINYINT      DEFAULT 1               COMMENT '账号状态（1-正常，0-禁用）',
+                     account_status TINYINT      DEFAULT 1               COMMENT '账号状态（2-待完善，1-正常，0-禁用）',
                      created_at     DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                      updated_at     DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                      is_deleted     TINYINT(1)   DEFAULT 0               COMMENT '逻辑删除（0-未删除，1-已删除）',
