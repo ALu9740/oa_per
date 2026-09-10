@@ -44,7 +44,7 @@ public class LoginEmp implements UserDetails {
     private Integer roleType;
 
     /**
-     * 账号状态（0-禁用，1-正常）
+     * 账号状态（0-禁用，1-正常，2-待完善）
      */
     private Integer accountStatus;
 

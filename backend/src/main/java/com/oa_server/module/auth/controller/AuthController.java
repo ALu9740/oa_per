@@ -3,10 +3,12 @@ package com.oa_server.module.auth.controller;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.Result;
 import com.oa_server.common.result.ResultCode;
+import com.oa_server.module.auth.dto.CompleteProfileDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
 import com.oa_server.module.auth.vo.LoginVo;
+import com.oa_server.module.emp.service.EmpService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final StringRedisTemplate stringRedisTemplate;
+    private final EmpService empService;
 
     /**
      * 发送验证码
@@ -67,6 +70,15 @@ public class AuthController {
         }
 
         return Result.success(authService.register(registerDTO));
+    }
+
+    /**
+     * 完善资料
+     */
+    @PutMapping("/complete-profile")
+    public Result<Void> completeProfile(@Valid @RequestBody CompleteProfileDTO completeProfileDTO) {
+        empService.completeProfile(completeProfileDTO);
+        return Result.success();
     }
 
     private String getClientIp(HttpServletRequest request) {

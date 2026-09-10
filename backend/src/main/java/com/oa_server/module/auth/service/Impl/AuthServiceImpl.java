@@ -1,6 +1,7 @@
 package com.oa_server.module.auth.service.Impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.RegisterDTO;
@@ -9,6 +10,7 @@ import com.oa_server.module.auth.service.AuthService;
 import com.oa_server.module.auth.vo.LoginVo;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
+import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
 import com.oa_server.module.emp.mapper.EmpMapper;
 import com.oa_server.module.emp.service.EmpService;
 import com.oa_server.security.JwtUtil;
@@ -23,11 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
-import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
 
 /**
  * 认证服务实现
@@ -105,15 +104,19 @@ public class AuthServiceImpl implements AuthService {
         }
         //创建员工
         Emp emp = new Emp();
+        long id = IdWorker.getId();
+        emp.setId(id);
         emp.setEmail(registerDTO.getEmail());
         emp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
         //设置账号状态为：待完善资料
         emp.setAccountStatus(EmpAccountStatusEnum.PENDING.getCode());
 
-        emp.setEmpNo(String.valueOf(emp.getId()));
+        emp.setEmpNo(String.valueOf(id));
 
-        empMapper.insert(emp);
+        emp.setRoleType(EmpRoleTypeEnum.NORMAL.getCode());
+
+        empMapper.insertEmp(emp);
 
         //删除已使用验证码
         stringRedisTemplate.delete(CODE_KEY_PREFIX + registerDTO.getEmail());

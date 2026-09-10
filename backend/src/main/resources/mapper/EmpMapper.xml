@@ -29,4 +29,27 @@
             LIMIT 1
     </select>
 
+    <!-- 新增员工 -->
+    <insert id="insertEmp" parameterType="com.oa_server.module.emp.entity.Emp">
+        INSERT INTO `emp` (id, emp_no, email, password, role_type, account_status)
+        VALUES (#{id}, #{empNo}, #{email}, #{password},#{roleType},#{accountStatus})
+    </insert>
+
+    <!-- 根据主键查询 -->
+    <select id="findById" resultMap="EmpResultMap">
+        SELECT * FROM `emp`
+        WHERE is_deleted = 0 AND id = #{id}
+            LIMIT 1
+    </select>
+
+    <!-- 完善资料：只在"待完善(2)"状态下允许更新，更新后状态置1 -->
+    <update id="updateProfile">
+        UPDATE `emp`
+        SET name         = #{name},
+            gender       = #{gender},
+            phone        = #{phone},
+            account_status = #{accountStatus}
+        WHERE id = #{id} AND is_deleted = 0 AND account_status = 2
+    </update>
+
 </mapper>
