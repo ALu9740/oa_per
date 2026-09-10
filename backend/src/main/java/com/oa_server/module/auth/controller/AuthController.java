@@ -4,6 +4,7 @@ import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.Result;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
+import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
@@ -79,6 +80,14 @@ public class AuthController {
     public Result<Void> completeProfile(@Valid @RequestBody CompleteProfileDTO completeProfileDTO) {
         empService.completeProfile(completeProfileDTO);
         return Result.success();
+    }
+
+    /**
+     * 员工登录
+     */
+    @PostMapping("/login")
+    public Result<LoginVo> login(@Valid @RequestBody LoginDTO loginDTO){
+        return Result.success(authService.login(loginDTO));
     }
 
     private String getClientIp(HttpServletRequest request) {

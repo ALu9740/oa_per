@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
+import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
@@ -41,10 +42,16 @@ public class AuthServiceImpl implements AuthService {
 
     private static final String CODE_KEY_PREFIX = "auth:sendCode:code:";
     private static final String LIMIT_KEY_PREFIX = "auth:sendCode:limit:";
+    private static final String LOGIN_LOCK_PREFIX = "auth:login:lock";
+    private static final String LOGIN_FAIL_PREFIX = "auth:login:fail:";
+    private static final int LOGIN_MAX_FAIL = 5;
 
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
     private static final Duration CODE_TTL = Duration.ofMinutes(5);
     private static final Duration LIMIT_TTL = Duration.ofSeconds(60);
+    private static final Duration LOGIN_FAIL_TTL = Duration.ofMinutes(15);
+    private static final Duration LOGIN_LOCK_TTL = Duration.ofMinutes(15);
+
 
     private final StringRedisTemplate stringRedisTemplate;
     private final JavaMailSender javaMailSender;
@@ -122,6 +129,50 @@ public class AuthServiceImpl implements AuthService {
         stringRedisTemplate.delete(CODE_KEY_PREFIX + registerDTO.getEmail());
 
         return buildLoginVO(emp);
+    }
+
+    @Override
+    public LoginVo login(LoginDTO loginDTO) {
+        String email = loginDTO.getEmail();
+
+        // 账号锁定检查（Redis 防爆破）
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(LOGIN_LOCK_PREFIX + email))) {
+            throw new BusinessException(ResultCode.ACCOUNT_LOCKED);
+        }
+
+        // 查询用户
+        Emp emp = empMapper.findByEmail(email);
+
+        if(emp == null || !passwordEncoder.matches(loginDTO.getPassword(), emp.getPassword())){
+            recordLoginFailure(email);
+            throw new BusinessException(ResultCode.EMAIL_OR_PASSWORD_ERROR);
+        }
+
+        if(emp.getAccountStatus() != null && emp.getAccountStatus() == EmpAccountStatusEnum.DISABLED.getCode()){
+            throw new BusinessException(ResultCode.ACCOUNT_DISABLED);
+        }
+
+        stringRedisTemplate.delete(LOGIN_FAIL_PREFIX + email);
+
+        log.info("[登录] 用户登录成功: userId={}, email={}", emp.getId(), email);
+
+        return buildLoginVO(emp);
+    }
+
+    /**
+     * 记录登录失败次数，超阈值则锁定账号
+     */
+    private void recordLoginFailure(String email) {
+        String failKey = LOGIN_FAIL_PREFIX + email;
+        Long count = stringRedisTemplate.opsForValue().increment(failKey);
+        if (count != null && count == 1) {
+            stringRedisTemplate.expire(failKey, LOGIN_FAIL_TTL);
+        }
+        if (count != null && count >= LOGIN_MAX_FAIL) {
+            stringRedisTemplate.opsForValue().set(LOGIN_LOCK_PREFIX + email, "1", LOGIN_LOCK_TTL);
+            stringRedisTemplate.delete(failKey);
+            log.warn("[登录] 账号多次失败被锁定: email={}, count={}", email, count);
+        }
     }
 
     /**

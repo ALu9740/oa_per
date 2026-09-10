@@ -1,5 +1,6 @@
 package com.oa_server.module.auth.service;
 
+import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.vo.LoginVo;
@@ -35,4 +36,12 @@ public interface AuthService {
      * @return 登录信息
      */
     LoginVo register(RegisterDTO registerDTO);
+
+    /**
+     * 登录
+     *
+     * @param loginDTO 登录 DTO
+     * @return 登录 VO
+     */
+    LoginVo login(LoginDTO loginDTO);
 }

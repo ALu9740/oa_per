@@ -33,6 +33,8 @@ public enum ResultCode {
     CODE_INVALID(2005, "验证码无效或已过期"),
     CODE_NOT_MATCH(2006, "验证码不正确"),
     EMAIL_EXISTS(2007, "邮箱已被注册"),
+    ACCOUNT_LOCKED(2008, "账号已被锁定，请15分钟后再试"),
+    EMAIL_OR_PASSWORD_ERROR(2009, "邮箱或密码错误"),
     ;
 
     private final Integer code;
