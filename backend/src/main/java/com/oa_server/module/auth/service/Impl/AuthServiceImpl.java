@@ -3,18 +3,31 @@ package com.oa_server.module.auth.service.Impl;
 import cn.hutool.core.util.StrUtil;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
+import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
+import com.oa_server.module.auth.vo.LoginVo;
+import com.oa_server.module.emp.entity.Emp;
+import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
+import com.oa_server.module.emp.mapper.EmpMapper;
+import com.oa_server.module.emp.service.EmpService;
+import com.oa_server.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
+
+import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
 
 /**
  * 认证服务实现
@@ -36,6 +49,10 @@ public class AuthServiceImpl implements AuthService {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final JavaMailSender javaMailSender;
+    private final EmpMapper empMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final EmpService empService;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
@@ -72,6 +89,48 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ResultCode.CODE_INVALID);
         }
         return cached.equals(code);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public LoginVo register(RegisterDTO registerDTO) {
+        //校验验证码
+        if(!verifyCode(registerDTO.getEmail(),registerDTO.getCode())){
+            throw new BusinessException(ResultCode.CODE_NOT_MATCH);
+        }
+        //校验邮箱是否存在
+        Emp exitEmp = empMapper.findByEmail(registerDTO.getEmail());
+        if(exitEmp!=null){
+            throw new BusinessException(ResultCode.EMAIL_EXISTS);
+        }
+        //创建员工
+        Emp emp = new Emp();
+        emp.setEmail(registerDTO.getEmail());
+        emp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+
+        //设置账号状态为：待完善资料
+        emp.setAccountStatus(EmpAccountStatusEnum.PENDING.getCode());
+
+        emp.setEmpNo(String.valueOf(emp.getId()));
+
+        empMapper.insert(emp);
+
+        //删除已使用验证码
+        stringRedisTemplate.delete(CODE_KEY_PREFIX + registerDTO.getEmail());
+
+        return buildLoginVO(emp);
+    }
+
+    /**
+     * 构建登录返回对象
+     */
+    private LoginVo buildLoginVO(Emp emp) {
+        LoginVo vo = new LoginVo();
+        vo.setAccessToken(jwtUtil.generateAccessToken(emp.getId(), emp.getEmail()));
+        vo.setRefreshToken(jwtUtil.generateRefreshToken(emp.getId(), emp.getEmail()));
+        vo.setExpiresIn(jwtUtil.getAccessTokenExpiration() / 1000);
+        vo.setEmpVO(empService.toVO(emp));
+        return vo;
     }
 
     /**

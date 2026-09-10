@@ -30,7 +30,9 @@ public enum ResultCode {
     ACCOUNT_DISABLED(2002, "账号已被禁用"),
     ACCOUNT_LOGIN_ELSEWHERE(2003, "当前账号已在其他设备登录，您已被强制下线"),
     EMAIL_SEND_FAILED(2004, "邮件发送失败，请检查邮箱地址或联系管理员"),
-    CODE_INVALID(2005, "验证码无效或已过期")
+    CODE_INVALID(2005, "验证码无效或已过期"),
+    CODE_NOT_MATCH(2006, "验证码不正确"),
+    EMAIL_EXISTS(2007, "邮箱已被注册"),
     ;
 
     private final Integer code;

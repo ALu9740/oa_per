@@ -1,6 +1,8 @@
 package com.oa_server.module.auth.service;
 
+import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
+import com.oa_server.module.auth.vo.LoginVo;
 
 /**
  * 认证服务接口
@@ -25,4 +27,12 @@ public interface AuthService {
      * @return 是否校验通过
      */
     Boolean verifyCode(String email, String code);
+
+    /**
+     * 注册
+     *
+     * @param registerDTO 注册信息
+     * @return 登录信息
+     */
+    LoginVo register(RegisterDTO registerDTO);
 }

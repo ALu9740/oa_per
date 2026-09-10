@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Data
 public class BaseEntity implements Serializable {
     /**
-     * 主键ID
+     * 主键ID 使用雪花算法生成
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
