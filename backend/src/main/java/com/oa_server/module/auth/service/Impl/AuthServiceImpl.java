@@ -1,6 +1,7 @@
 package com.oa_server.module.auth.service.Impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private static final String LIMIT_KEY_PREFIX = "auth:sendCode:limit:";
     private static final String LOGIN_LOCK_PREFIX = "auth:login:lock";
     private static final String LOGIN_FAIL_PREFIX = "auth:login:fail:";
+    private static final String TOKEN_BLACKLIST_PREFIX = "auth:token:blacklist:";
     private static final int LOGIN_MAX_FAIL = 5;
 
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -179,6 +181,42 @@ public class AuthServiceImpl implements AuthService {
         stringRedisTemplate.delete(CODE_KEY_PREFIX + resetPasswordDTO.getEmail());
 
         log.info("[重置密码] 员工密码已重置: userId={}, email={}", emp.getId(), emp.getEmail());
+    }
+
+    @Override
+    public LoginVo refresh(String refreshToken) {
+        //校验 Token 签名和有效期
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new BusinessException(ResultCode.TOKEN_INVALID);
+        }
+
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            throw new BusinessException(ResultCode.TOKEN_INVALID);
+        }
+
+        // 检查是否已被废弃（Redis 黑名单）
+        String tokenHash = DigestUtil.sha256Hex(refreshToken);
+        String blacklistKey = TOKEN_BLACKLIST_PREFIX + tokenHash;
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(blacklistKey))) {
+            throw new BusinessException(ResultCode.TOKEN_INVALID);
+        }
+
+        //从 Token 解析出用户信息
+        String email = jwtUtil.getEmailFromToken(refreshToken);
+        Long empID = jwtUtil.getEmpIdFromToken(refreshToken);
+        Emp emp = empMapper.findById(empID);
+        if (emp == null || !email.equals(emp.getEmail())) {
+            throw new BusinessException(ResultCode.TOKEN_INVALID);
+        }
+
+        // 把旧的 refreshToken 加入黑名单（有效期 = refreshToken剩余过期时间）
+        long remainingTime = jwtUtil.getRemainingTime(refreshToken);
+        if (remainingTime > 0) {
+            stringRedisTemplate.opsForValue().set(blacklistKey, "1", Duration.ofMillis(remainingTime));
+        }
+
+        //生成新的 Token
+        return buildLoginVO(emp);
     }
 
     /**

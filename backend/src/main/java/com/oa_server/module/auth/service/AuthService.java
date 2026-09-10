@@ -52,4 +52,12 @@ public interface AuthService {
      * @param resetPasswordDTO  重置密码 DTO
      */
     void resetPassword(ResetPasswordDTO resetPasswordDTO);
+
+    /**
+     * 刷新 Token
+     *
+     * @param refreshToken 刷新Token
+     * @return 登录 VO
+     */
+    LoginVo refresh(String refreshToken);
 }

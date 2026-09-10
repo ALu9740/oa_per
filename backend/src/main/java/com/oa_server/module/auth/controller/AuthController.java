@@ -100,6 +100,16 @@ public class AuthController {
         return Result.success(true);
     }
 
+    /**
+     * 刷新 Token
+     */
+    @PostMapping("/refresh")
+    public Result<LoginVo> refresh(@RequestHeader("Authorization") String refreshToken) {
+        // 去除 Bearer 前缀
+        String token = refreshToken.startsWith("Bearer ") ? refreshToken.substring(7) : refreshToken;
+        return Result.success(authService.refresh(token));
+    }
+
     private String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {

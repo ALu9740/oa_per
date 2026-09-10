@@ -170,4 +170,36 @@ public class JwtUtil {
     public long getAccessTokenExpiration() {
         return accessTokenExpiration;
     }
+
+    /** 获取 Token 剩余有效时间(毫秒) */
+    public long getRemainingTime(String token) {
+        Claims claims = parseToken(token);
+        return claims.getExpiration().getTime() - System.currentTimeMillis();
+    }
+
+    /**
+     * 判断是否为 REFRESH 类型 Token
+     */
+    public boolean isRefreshToken(String token) {
+        try {
+            Claims claims = parseToken(token);
+            return "REFRESH".equals(claims.get("type"));
+        } catch (Exception e) {
+            log.debug("[JWT] Token 类型判断失败: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 判断是否为 ACCESS 类型 Token
+     */
+    public boolean isAccessToken(String token) {
+        try {
+            Claims claims = parseToken(token);
+            return "ACCESS".equals(claims.get("type"));
+        } catch (Exception e) {
+            log.debug("[JWT] Token 类型判断失败: {}", e.getMessage());
+            return false;
+        }
+    }
 }

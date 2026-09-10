@@ -1,5 +1,6 @@
 package com.oa_server.security;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,12 +38,15 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String TOKEN_BLACKLIST_PREFIX = "auth:token:blacklist:";
+
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -53,6 +58,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String tokenType = (String) claims.get("type");
                 // 仅处理 ACCESS 类型 Token
                 if ("ACCESS".equals(tokenType) && StringUtils.hasText(email)) {
+                    // 检查 accessToken 是否已被登出（黑名单）
+                    String tokenHash = DigestUtil.sha256Hex(token);
+                    String blacklistKey = TOKEN_BLACKLIST_PREFIX + tokenHash;
+                    if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(blacklistKey))) {
+                        log.info("[JWT] Token 已被登出，拒绝访问: email={}", email);
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                     // 校验登录版本号：不匹配说明账号已在其他设备登录，强制下线
