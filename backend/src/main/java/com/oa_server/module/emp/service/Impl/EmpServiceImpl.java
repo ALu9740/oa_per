@@ -1,10 +1,12 @@
 package com.oa_server.module.emp.service.Impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
+import com.oa_server.module.emp.dto.UpdateProfileDTO;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
 import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
@@ -55,7 +57,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
             throw new BusinessException(ResultCode.NOT_FOUND);
         }
 
-        int rows = empMapper.updateProfile(
+        int rows = empMapper.completeProfile(
                 emp.getId(),
                 completeProfileDTO.getName(),
                 completeProfileDTO.getGender(),
@@ -88,4 +90,42 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         log.info("[根据员工ID获取员工资料] id={} 员工资料={}", empId, empVO);
         return empVO;
     }
+
+    @Override
+    public EmpVO updateProfile(UpdateProfileDTO updateProfileDTO) {
+        // 拿到当前登录用户
+        Long loginEmpId = SecurityUtils.getCurrentEmpId();
+        Emp emp = empMapper.findById(loginEmpId);
+        // 检查员工是否存在
+        if (emp == null) {
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+        // 更新员工资料
+        //姓名
+        if (StrUtil.isNotBlank(updateProfileDTO.getName())){
+            emp.setName(updateProfileDTO.getName());
+        }
+        //性别
+        if (updateProfileDTO.getGender() != null){
+            emp.setGender(updateProfileDTO.getGender());
+        }
+        //手机号
+        if (StrUtil.isNotBlank(updateProfileDTO.getPhone())){
+            emp.setPhone(updateProfileDTO.getPhone());
+        }
+        int rows = empMapper.updateProfile(emp.getId(),
+                emp.getName(),
+                emp.getGender(),
+                emp.getPhone());
+
+        if (rows == 0) {
+            throw new BusinessException(ResultCode.FORBIDDEN);
+        }
+        // 返回更新后的员工资料
+        EmpVO empVO = empToEmpVO(emp);
+        log.info("[更新员工资料] id={} 员工资料={}", emp.getId(), empVO);
+        return empVO;
+    }
 }
+
+

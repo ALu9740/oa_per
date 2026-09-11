@@ -2,6 +2,7 @@ package com.oa_server.module.emp.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
+import com.oa_server.module.emp.dto.UpdateProfileDTO;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.vo.EmpVO;
 
@@ -35,4 +36,12 @@ public interface EmpService extends IService<Emp> {
      * @return 员工资料
      */
     EmpVO getEmpInfo(Long empId);
+
+    /**
+     * 更新当前员工资料
+     *
+     * @param updateProfileDTO  更新员工资料 DTO
+     * @return 更新后的员工资料
+     */
+    EmpVO updateProfile(UpdateProfileDTO updateProfileDTO);
 }

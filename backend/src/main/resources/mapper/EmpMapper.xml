@@ -47,7 +47,7 @@
     </select>
 
     <!-- 完善资料：只在"待完善(2)"状态下允许更新，更新后状态置1 -->
-    <update id="updateProfile">
+    <update id="completeProfile">
         UPDATE `emp`
         SET name         = #{name},
             gender       = #{gender},
@@ -61,6 +61,15 @@
         UPDATE `emp`
         SET password = #{password}
         WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 更新个人员工资料 : 只在"正常(1)"状态下允许更新 -->
+    <update id="updateProfile">
+        UPDATE `emp`
+        SET name         = #{name},
+            gender       = #{gender},
+            phone        = #{phone}
+        WHERE id = #{id} AND is_deleted = 0 AND account_status = 1
     </update>
 
 </mapper>
