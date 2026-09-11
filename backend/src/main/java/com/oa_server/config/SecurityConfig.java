@@ -43,7 +43,9 @@ public class SecurityConfig {
             "/api/auth/verify-code",
             "/api/auth/reset-password",
             "/api/auth/complete-profile",
-            "/api/auth/refresh"
+            "/api/auth/refresh",
+            "/api/auth/logout",
+            "/minio/**"
     };
 
     @Bean
@@ -66,9 +68,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(WHITE_LIST).permitAll()
-                        // 管理员专属接口（员工管理、部门管理、职位管理）
-                        .requestMatchers("/api/employees/**", "/api/depts/**", "/api/jobs/**").hasRole("ADMIN")
-                        // 其他所有接口（个人中心、文件上传等）需要认证
+                        // 个人中心接口：登录即可访问
+                        .requestMatchers(HttpMethod.GET, "/api/emp/*").authenticated()
+                        .requestMatchers("/api/emp/update-profile", "/api/emp/upload-avatar").authenticated()
+                        // 管理员专属（员工/部门/职位管理的其余接口）
+                        .requestMatchers("/api/emp/**", "/api/dept/**", "/api/job/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

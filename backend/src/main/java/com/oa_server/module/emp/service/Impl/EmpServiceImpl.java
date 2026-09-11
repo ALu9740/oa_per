@@ -179,7 +179,8 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String savedName = uuid + "." + ext;
             String contentType = "image/" + ext;
-            url = fileStorageService.upload(bytes, subDir, savedName, contentType);
+
+            url = fileStorageService.uploadMinIO(bytes, subDir, savedName, contentType);
         } catch (RuntimeException e) {
             log.error("[上传头像] MinIO 上传失败: {}", e.getMessage());
             throw new BusinessException(ResultCode.PARAM_INVALID, EmpAvatarEnum.AVATAR_UPLOAD_FAILED.getMessage());

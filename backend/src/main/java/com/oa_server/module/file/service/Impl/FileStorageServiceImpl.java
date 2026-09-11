@@ -30,7 +30,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     private String urlPrefix;
 
     @Override
-    public String upload(byte[] bytes, String subDir, String fileName, String contentType) {
+    public String uploadMinIO(byte[] bytes, String subDir, String fileName, String contentType) {
         try {
             String objectName = subDir + "/" + fileName;
             minioClient.putObject(PutObjectArgs.builder()

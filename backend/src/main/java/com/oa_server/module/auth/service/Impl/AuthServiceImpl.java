@@ -225,13 +225,12 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String accessToken, String refreshTokenHeader) {
         Long empId = null;
 
-        //从 Security 上下文验证登录态
+        //从 Security 上下文获取登录人（accessToken 可能已过期，拿不到也继续处理黑名单）
         try {
             LoginEmp emp = SecurityUtils.getCurrentEmp();
             empId = emp.getId();
         } catch (Exception e) {
-            log.warn("[登出] 无有效登录态，跳过: {}", e.getMessage());
-            return;
+            log.warn("[登出] 无有效登录态，继续处理 token 黑名单: {}", e.getMessage());
         }
 
         //accessToken 加入黑名单

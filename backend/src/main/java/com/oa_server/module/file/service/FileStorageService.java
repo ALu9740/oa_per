@@ -17,5 +17,5 @@ public interface FileStorageService {
      * @param contentType MIME 类型
      * @return 可访问的 URL
      */
-    String upload(byte[] bytes, String subDir, String fileName, String contentType);
+    String uploadMinIO(byte[] bytes, String subDir, String fileName, String contentType);
 }

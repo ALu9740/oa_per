@@ -59,8 +59,8 @@ public class LoginEmp implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String authority = "ROLE_TYPE_" + (roleType == 0 ? "Emp" : "Admin");
-        return Collections.singletonList(new SimpleGrantedAuthority(authority));
+        boolean isAdmin = roleType != null && roleType == 1;
+        return Collections.singletonList(new SimpleGrantedAuthority(isAdmin ? "ROLE_ADMIN" : "ROLE_EMP"));
     }
 
     @Override
