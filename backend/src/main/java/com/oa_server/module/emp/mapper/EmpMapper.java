@@ -23,4 +23,6 @@ public interface EmpMapper extends BaseMapper<Emp> {
     void resetPassword(Emp emp);
 
     int updateProfile(@Param("id") Long id, @Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone);
+
+    int updateAvatar(@Param("id") Long loginEmpId,@Param("avatar") String url);
 }

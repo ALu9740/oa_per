@@ -72,4 +72,11 @@
         WHERE id = #{id} AND is_deleted = 0 AND account_status = 1
     </update>
 
+    <!-- 更新员工头像 -->
+    <update id="updateAvatar">
+        UPDATE `emp`
+        SET avatar = #{avatar}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
 </mapper>

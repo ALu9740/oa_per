@@ -44,4 +44,12 @@ public interface EmpService extends IService<Emp> {
      * @return 更新后的员工资料
      */
     EmpVO updateProfile(UpdateProfileDTO updateProfileDTO);
+
+    /**
+     * 头像上传
+     *
+     * @param base64 头像图片的 base64 编码
+     * @return 头像图片的 URL
+     */
+    String uploadAvatar(String base64);
 }

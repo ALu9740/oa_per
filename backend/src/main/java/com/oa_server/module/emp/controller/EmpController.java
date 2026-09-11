@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * 员工接口
  *
@@ -37,4 +39,14 @@ public class EmpController {
     public Result<EmpVO> updateProfile(@Valid @RequestBody UpdateProfileDTO updateProfileDTO){
         return Result.success(empService.updateProfile(updateProfileDTO));
     }
+
+    /**
+     * 头像上传（base64）
+     */
+    @PostMapping("/upload-avatar")
+    public Result<String> uploadAvatar(@RequestBody Map<String, String> body){
+        String base64 = body.get("base64");
+        return Result.success(empService.uploadAvatar(base64));
+    }
+
 }
