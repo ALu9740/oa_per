@@ -1,5 +1,6 @@
 package com.oa_server.module.auth.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.Result;
 import com.oa_server.common.result.ResultCode;
@@ -108,6 +109,21 @@ public class AuthController {
         // 去除 Bearer 前缀
         String token = refreshToken.startsWith("Bearer ") ? refreshToken.substring(7) : refreshToken;
         return Result.success(authService.refresh(token));
+    }
+
+    /**
+     * 登出
+     */
+    @PostMapping("/logout")
+    public Result<Void> logout(HttpServletRequest request, @RequestHeader(value = "X-Refresh-Token", required = false) String refreshTokenHeader) {
+        String accessToken = null;
+        String authHeader = request.getHeader("Authorization");
+        if (StrUtil.isNotBlank(authHeader) && authHeader.startsWith("Bearer ")) {
+            accessToken = authHeader.substring(7);
+        }
+
+        authService.logout(accessToken, refreshTokenHeader);
+        return Result.success("登出成功", null);
     }
 
     private String getClientIp(HttpServletRequest request) {

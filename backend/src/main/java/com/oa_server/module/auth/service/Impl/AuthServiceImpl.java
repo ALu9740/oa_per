@@ -17,6 +17,8 @@ import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
 import com.oa_server.module.emp.mapper.EmpMapper;
 import com.oa_server.module.emp.service.EmpService;
 import com.oa_server.security.JwtUtil;
+import com.oa_server.security.LoginEmp;
+import com.oa_server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -217,6 +219,48 @@ public class AuthServiceImpl implements AuthService {
 
         //生成新的 Token
         return buildLoginVO(emp);
+    }
+
+    @Override
+    public void logout(String accessToken, String refreshTokenHeader) {
+        Long empId = null;
+
+        //从 Security 上下文验证登录态
+        try {
+            LoginEmp emp = SecurityUtils.getCurrentEmp();
+            empId = emp.getId();
+        } catch (Exception e) {
+            log.warn("[登出] 无有效登录态，跳过: {}", e.getMessage());
+            return;
+        }
+
+        //accessToken 加入黑名单
+        if (StrUtil.isNotBlank(accessToken) && jwtUtil.validateToken(accessToken)) {
+            addToBlacklist(accessToken);
+        }
+
+        //refreshToken 也加入黑名单
+        if (StrUtil.isNotBlank(refreshTokenHeader)) {
+            String refreshToken = refreshTokenHeader.startsWith("Bearer ")
+                    ? refreshTokenHeader.substring(7) : refreshTokenHeader;
+            if (jwtUtil.validateToken(refreshToken) && jwtUtil.isRefreshToken(refreshToken)) {
+                addToBlacklist(refreshToken);
+            }
+        }
+
+        log.info("[登出] 用户登出成功: userId={}", empId);
+    }
+
+    /**
+     * 把 token 加入黑名单
+     */
+    private void addToBlacklist(String token) {
+        long remainingTime = jwtUtil.getRemainingTime(token);
+        if (remainingTime > 0) {
+            String tokenHash = DigestUtil.sha256Hex(token);
+            String blacklistKey = TOKEN_BLACKLIST_PREFIX + tokenHash;
+            stringRedisTemplate.opsForValue().set(blacklistKey, "1", Duration.ofMillis(remainingTime));
+        }
     }
 
     /**

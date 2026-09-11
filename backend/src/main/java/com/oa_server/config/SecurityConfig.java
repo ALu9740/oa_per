@@ -37,7 +37,13 @@ public class SecurityConfig {
      * 白名单路径
      */
     private static final String[] WHITE_LIST = {
-            "/api/auth/**"
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/send-code",
+            "/api/auth/verify-code",
+            "/api/auth/reset-password",
+            "/api/auth/complete-profile",
+            "/api/auth/refresh"
     };
 
     @Bean

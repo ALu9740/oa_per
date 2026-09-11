@@ -60,4 +60,12 @@ public interface AuthService {
      * @return 登录 VO
      */
     LoginVo refresh(String refreshToken);
+
+    /**
+     * 登出
+     *
+     * @param accessToken  访问Token
+     * @param refreshToken 刷新Token
+     */
+    void logout(String accessToken, String refreshToken);
 }
