@@ -24,7 +24,9 @@
 
     <!-- 根据邮箱查询用户 -->
     <select id="findByEmail" resultMap="EmpResultMap">
-        SELECT * FROM `emp`
+        SELECT id, emp_no, name, gender, phone, email, avatar, password,
+               dept_id, job_id, hire_date, role_type, account_status, created_at, updated_at
+        FROM `emp`
         WHERE is_deleted = 0 AND email = #{email}
             LIMIT 1
     </select>
@@ -37,7 +39,9 @@
 
     <!-- 根据主键查询 -->
     <select id="findById" resultMap="EmpResultMap">
-        SELECT * FROM `emp`
+        SELECT id, emp_no, name, gender, phone, email, avatar,
+               dept_id, job_id, hire_date, role_type, account_status, created_at, updated_at
+        FROM `emp`
         WHERE is_deleted = 0 AND id = #{id}
             LIMIT 1
     </select>

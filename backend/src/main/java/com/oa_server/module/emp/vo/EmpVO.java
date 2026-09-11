@@ -43,6 +43,11 @@ public class EmpVO {
      */
      private Long jobId;
 
+     /**
+     * 头像URL
+     */
+    private String avatar;
+
     /**
      * 手机号
      */

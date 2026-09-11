@@ -19,7 +19,7 @@ public interface EmpService extends IService<Emp> {
      * @param emp 员工实体
      * @return 员工 VO
      */
-    EmpVO toVO(Emp emp);
+    EmpVO empToEmpVO(Emp emp);
 
     /**
      * 完善资料
@@ -27,4 +27,12 @@ public interface EmpService extends IService<Emp> {
      * @param completeProfileDTO 完善资料DTO
      */
     void completeProfile(CompleteProfileDTO completeProfileDTO);
+
+    /**
+     * 根据ID获取员工资料
+     *
+     * @param empId 员工ID
+     * @return 员工资料
+     */
+    EmpVO getEmpInfo(Long empId);
 }

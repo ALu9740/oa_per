@@ -7,10 +7,12 @@ import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
+import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
 import com.oa_server.module.emp.mapper.EmpMapper;
 import com.oa_server.module.emp.service.EmpService;
 import com.oa_server.module.emp.vo.EmpVO;
 import com.oa_server.security.LoginEmp;
+import com.oa_server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +34,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
     private final EmpMapper empMapper;
 
     @Override
-    public EmpVO toVO(Emp emp) {
+    public EmpVO empToEmpVO(Emp emp) {
         EmpVO empVO = new EmpVO();
         BeanUtil.copyProperties(emp, empVO, "password");
         return empVO;
@@ -65,5 +67,25 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         }
 
         log.info("[完善资料] id={} 完善成功，账号状态置为正常", emp.getId());
+    }
+
+    @Override
+    public EmpVO getEmpInfo(Long empId) {
+        // 拿到当前登录用户
+        LoginEmp loginEmp = SecurityUtils.getCurrentEmp();
+        Long loginEmpId = loginEmp.getId();
+        Integer loginRoleType = loginEmp.getRoleType();
+        Emp emp = empMapper.findById(empId);
+        if(emp == null){
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+        // 普通员工只能查看自己的资料
+        if (loginRoleType == EmpRoleTypeEnum.NORMAL.getCode() && !empId.equals(loginEmpId)) {
+            throw new BusinessException(ResultCode.FORBIDDEN);
+        }
+
+        EmpVO empVO = empToEmpVO(emp);
+        log.info("[根据员工ID获取员工资料] id={} 员工资料={}", empId, empVO);
+        return empVO;
     }
 }

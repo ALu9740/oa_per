@@ -287,7 +287,7 @@ public class AuthServiceImpl implements AuthService {
         vo.setAccessToken(jwtUtil.generateAccessToken(emp.getId(), emp.getEmail()));
         vo.setRefreshToken(jwtUtil.generateRefreshToken(emp.getId(), emp.getEmail()));
         vo.setExpiresIn(jwtUtil.getAccessTokenExpiration() / 1000);
-        vo.setEmpVO(empService.toVO(emp));
+        vo.setEmpVO(empService.empToEmpVO(emp));
         return vo;
     }
 
