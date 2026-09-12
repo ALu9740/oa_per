@@ -1,10 +1,7 @@
 package com.oa_server.module.admin.emps.service;
 
 import com.oa_server.common.result.PageResult;
-import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
-import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
-import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
-import com.oa_server.module.admin.emps.dto.AdminUpdateAccountStatusDTO;
+import com.oa_server.module.admin.emps.dto.*;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 
 /**
@@ -42,4 +39,11 @@ public interface AdminEmpSService {
      * @param adminUpdateAccountStatusDTO 更新账号状态 DTO
      */
     void updateAccountStatus(AdminUpdateAccountStatusDTO adminUpdateAccountStatusDTO);
+
+    /**
+     * 批量删除员工
+     *
+     * @param adminBatchDeleteEmpDTO 批量删除员工 DTO
+     */
+    void batchDeleteEmp(AdminBatchDeleteEmpDTO adminBatchDeleteEmpDTO);
 }

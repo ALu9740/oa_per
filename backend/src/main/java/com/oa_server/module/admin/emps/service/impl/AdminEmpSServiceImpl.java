@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.ResultCode;
-import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
-import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
-import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
-import com.oa_server.module.admin.emps.dto.AdminUpdateAccountStatusDTO;
+import com.oa_server.module.admin.emps.dto.*;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 import com.oa_server.module.emp.entity.Emp;
@@ -22,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 员工管理 服务实现
@@ -177,5 +176,19 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         empMapper.updateAccountStatus(emp);
 
         log.info("[管理员] 更新账号状态：id={},accountStatus={}",adminUpdateAccountStatusDTO.getId(),adminUpdateAccountStatusDTO.getAccountStatus());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDeleteEmp(AdminBatchDeleteEmpDTO adminBatchDeleteEmpDTO) {
+        List<Long> ids = adminBatchDeleteEmpDTO.getEmpIds();
+        //校验员工是否存在
+        int existCount = empMapper.countByIds(ids);
+        if(existCount != ids.size()){
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+        //批量删除
+        empMapper.batchDeleteByIds(ids);
+        log.info("[管理员] 批量删除员工：共{}个员工, ids={}", ids.size(), ids);
     }
 }

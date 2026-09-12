@@ -3,10 +3,7 @@ package com.oa_server.module.admin.emps.controller;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
-import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
-import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
-import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
-import com.oa_server.module.admin.emps.dto.AdminUpdateAccountStatusDTO;
+import com.oa_server.module.admin.emps.dto.*;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 import jakarta.validation.Valid;
@@ -58,6 +55,15 @@ public class AdminEmpSController {
     @PutMapping("/emp-account-status")
     public Result<Void> updateAccountStatus(@Valid @RequestBody AdminUpdateAccountStatusDTO adminUpdateAccountStatusDTO) {
         adminEmpSService.updateAccountStatus(adminUpdateAccountStatusDTO);
+        return Result.success();
+    }
+
+    /**
+     * 批量删除员工
+     */
+    @PutMapping("/emp-batch-delete")
+    public Result<Void> batchDeleteEmp(@Valid @RequestBody AdminBatchDeleteEmpDTO adminBatchDeleteEmpDTO) {
+        adminEmpSService.batchDeleteEmp(adminBatchDeleteEmpDTO);
         return Result.success();
     }
 }

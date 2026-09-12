@@ -157,4 +157,25 @@
         SET account_status = #{accountStatus}
         WHERE id = #{id} AND is_deleted = 0
     </update>
+
+    <!-- 员工管理 - 批量删除员工 -->
+    <update id="batchDeleteByIds">
+        UPDATE `emp`
+        SET is_deleted = 1
+        WHERE is_deleted = 0 AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 统计指定 ID 列表中存在的有效员工数量 -->
+    <select id="countByIds" resultType="int">
+        SELECT COUNT(*)
+        FROM `emp`
+        WHERE is_deleted = 0
+          AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

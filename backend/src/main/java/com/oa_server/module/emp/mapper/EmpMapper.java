@@ -8,6 +8,8 @@ import com.oa_server.module.emp.entity.Emp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 员工 Mapper 接口
  *
@@ -42,4 +44,8 @@ public interface EmpMapper extends BaseMapper<Emp> {
     void editEmp(Emp emp);
 
     void updateAccountStatus(Emp emp);
+
+    void batchDeleteByIds(@Param("ids") List<Long> ids);
+
+    int countByIds(@Param("ids") List<Long> ids);
 }
