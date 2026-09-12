@@ -3,6 +3,9 @@ package com.oa_server.module.admin.emps.service;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.emps.dto.*;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
+import com.oa_server.module.admin.emps.vo.OptionVO;
+
+import java.util.List;
 
 /**
  * 员工管理 服务实现
@@ -46,4 +49,14 @@ public interface AdminEmpSService {
      * @param adminBatchDeleteEmpDTO 批量删除员工 DTO
      */
     void batchDeleteEmp(AdminBatchDeleteEmpDTO adminBatchDeleteEmpDTO);
+
+    /**
+     * 部门选项列表
+     */
+    List<OptionVO> getDeptOptions();
+
+    /**
+     * 职位选项列表
+     */
+    List<OptionVO> getJobOptions();
 }

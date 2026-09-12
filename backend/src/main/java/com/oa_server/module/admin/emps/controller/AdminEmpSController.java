@@ -6,9 +6,12 @@ import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.emps.dto.*;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
+import com.oa_server.module.admin.emps.vo.OptionVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  *员工管理接口
@@ -65,5 +68,21 @@ public class AdminEmpSController {
     public Result<Void> batchDeleteEmp(@Valid @RequestBody AdminBatchDeleteEmpDTO adminBatchDeleteEmpDTO) {
         adminEmpSService.batchDeleteEmp(adminBatchDeleteEmpDTO);
         return Result.success();
+    }
+
+    /**
+     * 部门选项列表
+     */
+    @GetMapping("/dept-options")
+    public Result<List<OptionVO>> getDeptOptions() {
+        return Result.success(adminEmpSService.getDeptOptions());
+    }
+
+    /**
+     * 职位选项列表
+     */
+    @GetMapping("/job-options")
+    public Result<List<OptionVO>> getJobOptions() {
+        return Result.success(adminEmpSService.getJobOptions());
     }
 }

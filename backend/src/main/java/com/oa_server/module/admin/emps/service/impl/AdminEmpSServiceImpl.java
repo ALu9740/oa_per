@@ -10,6 +10,7 @@ import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.emps.dto.*;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
+import com.oa_server.module.admin.emps.vo.OptionVO;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
 import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
@@ -190,5 +191,15 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         //批量删除
         empMapper.batchDeleteByIds(ids);
         log.info("[管理员] 批量删除员工：共{}个员工, ids={}", ids.size(), ids);
+    }
+
+    @Override
+    public List<OptionVO> getDeptOptions() {
+        return empMapper.selectDeptOptions();
+    }
+
+    @Override
+    public List<OptionVO> getJobOptions() {
+        return empMapper.selectJobOptions();
     }
 }

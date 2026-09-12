@@ -13,6 +13,11 @@ import java.time.LocalDate;
 @Data
 public class AdminEmpVO {
     /**
+     * 员工ID
+     */
+    private Long id;
+
+    /**
      * 员工编号
      */
     private String empNo;
@@ -33,9 +38,19 @@ public class AdminEmpVO {
     private Long deptId;
 
     /**
+     * 部门名称
+     */
+    private String deptName;
+
+    /**
      * 职位ID
      */
     private Long jobId;
+
+    /**
+     * 职位名称
+     */
+    private String jobName;
 
     /**
      * 手机号

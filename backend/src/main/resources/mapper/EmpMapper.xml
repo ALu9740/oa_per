@@ -88,33 +88,38 @@
 
     <!-- 员工管理 - 条件 + 分页查询员工列表 -->
     <select id="selectEmpPage" resultType="com.oa_server.module.admin.emps.vo.AdminEmpVO">
-        SELECT e.emp_no   AS empNo,
+        SELECT e.id       AS id,
+               e.emp_no   AS empNo,
                e.name,
                e.gender,
                e.dept_id AS deptId,
                e.job_id  AS jobId,
+               d.dept_name AS deptName,
+               j.job_name  AS jobName,
                e.phone,
                e.email,
                e.hire_date AS hireDate,
                e.account_status AS accountStatus
         FROM `emp` e
+        LEFT JOIN `dept` d ON d.id = e.dept_id AND d.is_deleted = 0
+        LEFT JOIN `job` j ON j.id = e.job_id AND j.is_deleted = 0
         WHERE e.is_deleted = 0
-        <if test="adminEmpQueryDTO.name != null and adminEmpQueryDTO.name != ''">
+        <if test="query.name != null and query.name != ''">
             AND e.name LIKE CONCAT('%', #{query.name}, '%')
         </if>
-        <if test="adminEmpQueryDTO.deptId != null">
+        <if test="query.deptId != null">
             AND e.dept_id = #{query.deptId}
         </if>
-        <if test="adminEmpQueryDTO.jobId != null">
+        <if test="query.jobId != null">
             AND e.job_id = #{query.jobId}
         </if>
-        <if test="adminEmpQueryDTO.hireDateStart != null">
+        <if test="query.hireDateStart != null">
             AND e.hire_date <![CDATA[ >= ]]> #{query.hireDateStart}
         </if>
-        <if test="adminEmpQueryDTO.hireDateEnd != null">
+        <if test="query.hireDateEnd != null">
             AND e.hire_date <![CDATA[ <= ]]> #{query.hireDateEnd}
         </if>
-        <if test="adminEmpQueryDTO.accountStatus != null">
+        <if test="query.accountStatus != null">
             AND e.account_status = #{query.accountStatus}
         </if>
         ORDER BY e.created_at DESC
@@ -177,5 +182,21 @@
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </select>
+
+    <!-- 员工管理 - 部门选项列表 -->
+    <select id="selectDeptOptions" resultType="com.oa_server.module.admin.emps.vo.OptionVO">
+        SELECT id, dept_name AS name
+        FROM `dept`
+        WHERE is_deleted = 0
+        ORDER BY id
+    </select>
+
+    <!-- 员工管理 - 职位选项列表 -->
+    <select id="selectJobOptions" resultType="com.oa_server.module.admin.emps.vo.OptionVO">
+        SELECT id, job_name AS name
+        FROM `job`
+        WHERE is_deleted = 0
+        ORDER BY id
     </select>
 </mapper>
