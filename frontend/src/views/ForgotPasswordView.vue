@@ -107,7 +107,7 @@
           <el-input
             v-model="form.password"
             type="password"
-            placeholder="请输入新密码（6-32位）"
+            placeholder="请输入新密码"
             show-password
             :prefix-icon="Lock"
           />

@@ -3,7 +3,8 @@ import { ElMessage } from 'element-plus'
 import { getToken, clearLogin } from '../utils/auth'
 
 const request = axios.create({
-  baseURL: '/api',
+  // 优先使用环境变量 VITE_API_BASE，未配置时退回 /api（走 vite proxy）
+  baseURL: import.meta.env.VITE_API_BASE || '/api',
   timeout: 10000,
 })
 
@@ -25,6 +26,10 @@ request.interceptors.response.use(
     return Promise.reject(new Error(result.message || '操作失败'))
   },
   (error) => {
+    if (error.config?.skipAuthRedirect) {
+      // 调用方自行处理错误（如登出：401 也算正常结局）
+      return Promise.reject(error)
+    }
     const result = error.response?.data
     if (error.response?.status === 401) {
       clearLogin()

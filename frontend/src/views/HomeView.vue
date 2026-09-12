@@ -15,30 +15,32 @@
           <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
         </el-menu-item>
-        <el-menu-item index="employees" disabled>
-          <el-icon><User /></el-icon>
-          <template #title>
-            <span>员工管理</span>
-            <span class="menu-tag">开发中</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="depts" disabled>
-          <el-icon><OfficeBuilding /></el-icon>
-          <template #title>
-            <span>部门管理</span>
-            <span class="menu-tag">开发中</span>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="jobs" disabled>
-          <el-icon><Suitcase /></el-icon>
-          <template #title>
-            <span>职位管理</span>
-            <span class="menu-tag">开发中</span>
-          </template>
-        </el-menu-item>
+        <template v-if="isAdmin">
+          <el-menu-item index="employees" disabled>
+            <el-icon><User /></el-icon>
+            <template #title>
+              <span>员工管理</span>
+              <span class="menu-tag">开发中</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="depts" disabled>
+            <el-icon><OfficeBuilding /></el-icon>
+            <template #title>
+              <span>部门管理</span>
+              <span class="menu-tag">开发中</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="jobs" disabled>
+            <el-icon><Suitcase /></el-icon>
+            <template #title>
+              <span>职位管理</span>
+              <span class="menu-tag">开发中</span>
+            </template>
+          </el-menu-item>
+        </template>
       </el-menu>
 
-      <div class="sidebar-footer">v0.1.0</div>
+      <div class="sidebar-footer">v0.0.1</div>
     </aside>
 
     <div class="main-area">
@@ -49,19 +51,17 @@
 
         <el-dropdown @command="handleCommand">
           <span class="user-entry">
-            <span class="user-avatar">{{ avatarText }}</span>
+            <span class="user-avatar">
+              <img v-if="user?.avatar" :src="user.avatar" class="user-avatar-img" alt="头像" />
+              <template v-else>{{ avatarText }}</template>
+            </span>
             <span class="user-name">{{ user?.name || user?.email || '用户' }}</span>
             <el-icon class="user-arrow"><ArrowDown /></el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="profile" disabled>
+              <el-dropdown-item command="profile">
                 个人信息
-                <span class="dropdown-tag">开发中</span>
-              </el-dropdown-item>
-              <el-dropdown-item command="password" disabled>
-                修改密码
-                <span class="dropdown-tag">开发中</span>
               </el-dropdown-item>
               <el-dropdown-item command="logout" divided>
                 <el-icon><SwitchButton /></el-icon>
@@ -75,13 +75,12 @@
       <main class="content">
         <section class="welcome-banner">
           <div class="welcome-text">
-            <h2>{{ greeting }}，{{ user?.name || '同学' }} 👋</h2>
+            <h2>{{ greeting }}，{{ user?.name || '员工' }} 👋</h2>
             <p>欢迎使用 OA员工管理系统，祝您工作顺利</p>
-          </div>
-          <div class="welcome-status">
-            <el-tag :type="statusTag.type" effect="dark" size="large">
-              {{ statusTag.label }}
-            </el-tag>
+            <div class="welcome-datetime">
+              <span class="datetime-time">{{ clock.time }}</span>
+              <span class="datetime-date">{{ clock.date }}</span>
+            </div>
           </div>
         </section>
 
@@ -112,25 +111,48 @@
           </el-descriptions>
         </section>
 
-        <section class="module-cards">
-          <div v-for="item in modules" :key="item.title" class="module-card">
-            <div class="module-icon" :style="{ background: item.bg }">
-              <el-icon :size="22"><component :is="item.icon" /></el-icon>
+        <template v-if="isAdmin">
+          <section class="profile-card">
+            <div class="card-header">
+              <h3>快捷入口</h3>
+              <span class="card-subtitle">常用管理功能快速访问</span>
             </div>
-            <div class="module-info">
-              <h4>{{ item.title }}</h4>
-              <p>{{ item.desc }}</p>
+            <div class="module-cards">
+              <div v-for="item in modules" :key="item.title" class="module-card">
+                <div class="module-icon" :style="{ background: item.bg }">
+                  <el-icon :size="22"><component :is="item.icon" /></el-icon>
+                </div>
+                <div class="module-info">
+                  <h4>{{ item.title }}</h4>
+                  <p>{{ item.desc }}</p>
+                </div>
+                <el-tag size="small" type="info" effect="plain">开发中</el-tag>
+              </div>
             </div>
-            <el-tag size="small" type="info" effect="plain">开发中</el-tag>
-          </div>
-        </section>
+          </section>
+
+          <section class="profile-card">
+            <div class="card-header">
+              <h3>系统信息</h3>
+              <span class="card-subtitle">当前系统运行环境</span>
+            </div>
+            <el-descriptions :column="3" border class="profile-descriptions">
+              <el-descriptions-item label="系统名称">OA-PER</el-descriptions-item>
+              <el-descriptions-item label="系统版本">v0.0.1</el-descriptions-item>
+              <el-descriptions-item label="缓存">Redis</el-descriptions-item>
+              <el-descriptions-item label="前端框架">Vue 3 + Vite + Element Plus</el-descriptions-item>
+              <el-descriptions-item label="后端框架">Spring Boot 3.5</el-descriptions-item>
+              <el-descriptions-item label="数据库">MySQL</el-descriptions-item>
+            </el-descriptions>
+          </section>
+        </template>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
@@ -146,6 +168,30 @@ import { logout } from '../api/auth'
 
 const router = useRouter()
 const user = getUser()
+
+const isAdmin = computed(() => user?.roleType === 1)
+
+const now = ref(new Date())
+let clockTimer = null
+
+const clock = computed(() => {
+  const d = now.value
+  const pad = (n) => String(n).padStart(2, '0')
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  const weekdays = ['日', '一', '二', '三', '四', '五', '六']
+  const date = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 星期${weekdays[d.getDay()]}`
+  return { time, date }
+})
+
+onMounted(() => {
+  clockTimer = setInterval(() => {
+    now.value = new Date()
+  }, 1000)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(clockTimer)
+})
 
 const greeting = computed(() => {
   const hour = new Date().getHours()
@@ -203,6 +249,10 @@ const modules = [
 ]
 
 function handleCommand(command) {
+  if (command === 'profile') {
+    router.push('/profile')
+    return
+  }
   if (command === 'logout') {
     const refreshToken = getRefreshToken()
     // 通知后端使 token 失效（即使失败也不阻塞本地登出）
@@ -263,18 +313,13 @@ function handleCommand(command) {
   padding: 8px;
 }
 
-.menu-tag,
-.dropdown-tag {
+.menu-tag {
   margin-left: 8px;
   padding: 0 6px;
   font-size: 11px;
   color: #909399;
   background: #f4f4f5;
   border-radius: 4px;
-}
-
-.dropdown-tag {
-  margin-left: 42px;
 }
 
 .sidebar-footer {
@@ -321,6 +366,13 @@ function handleCommand(command) {
   font-size: 14px;
   font-weight: 600;
   background: linear-gradient(135deg, #2563eb, #5b8def);
+  overflow: hidden;
+}
+
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .user-name {
@@ -344,24 +396,42 @@ function handleCommand(command) {
 }
 
 .welcome-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 28px 32px;
+  background: #fff;
+  border: 1px solid var(--oa-border);
   border-radius: 10px;
-  color: #fff;
-  background: linear-gradient(120deg, #1d39c4 0%, #2563eb 60%, #4096ff 100%);
 }
 
 .welcome-text h2 {
   font-size: 22px;
   font-weight: 600;
+  color: #1f2329;
 }
 
 .welcome-text p {
   margin-top: 8px;
   font-size: 13px;
-  opacity: 0.85;
+  color: #8f959e;
+}
+
+.welcome-datetime {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.datetime-time {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2329;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.datetime-date {
+  font-size: 13px;
+  color: #8f959e;
 }
 
 .profile-card {
@@ -398,7 +468,6 @@ function handleCommand(command) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
-  margin-top: 20px;
 }
 
 .module-card {
@@ -406,7 +475,7 @@ function handleCommand(command) {
   align-items: center;
   gap: 14px;
   padding: 18px 20px;
-  background: #fff;
+  background: #fafbfc;
   border: 1px solid var(--oa-border);
   border-radius: 10px;
 }

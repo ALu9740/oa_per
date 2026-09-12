@@ -29,6 +29,7 @@ export function logout(refreshToken) {
     headers: {
       'X-Refresh-Token': refreshToken || '',
     },
+    skipAuthRedirect: true,
   })
 }
 
