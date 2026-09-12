@@ -3,6 +3,7 @@ package com.oa_server.module.admin.depts.service;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
 import com.oa_server.module.admin.depts.vo.AdminDeptVO;
+import com.oa_server.module.admin.depts.dto.AdminAddDeptDTO;
 
 /**
  * 部门管理 服务实现
@@ -18,4 +19,11 @@ public interface AdminDeptSService {
      * @return 分页结果
      */
     PageResult<AdminDeptVO> getDeptList(AdminDeptQueryDTO adminDeptQueryDTO);
+
+    /**
+     * 新增部门
+     *
+     * @param adminAddDeptDTO 新增员工 DTO
+     */
+    void addDept(AdminAddDeptDTO adminAddDeptDTO);
 }

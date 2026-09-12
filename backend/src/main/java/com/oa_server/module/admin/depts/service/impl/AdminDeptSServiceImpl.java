@@ -2,15 +2,19 @@ package com.oa_server.module.admin.depts.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
+import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
 import com.oa_server.module.admin.depts.entity.Dept;
 import com.oa_server.module.admin.depts.mapper.DeptSMapper;
 import com.oa_server.module.admin.depts.service.AdminDeptSService;
 import com.oa_server.module.admin.depts.vo.AdminDeptVO;
+import com.oa_server.module.admin.depts.dto.AdminAddDeptDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 部门管理 服务实现
@@ -44,5 +48,21 @@ public class AdminDeptSServiceImpl extends ServiceImpl<DeptSMapper, Dept> implem
                 result.getSize(),
                 result.getRecords()
         );
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addDept(AdminAddDeptDTO adminAddDeptDTO) {
+        //根据部门名称查询部门是否存在
+        Dept exitDept = deptSMapper.selectDeptByName(adminAddDeptDTO.getDeptName());
+        if(exitDept != null){
+            throw new BusinessException(ResultCode.DUPLICATE_NAME);
+        }
+
+        // 创建部门
+        Dept dept = new Dept();
+        dept.setDeptName(adminAddDeptDTO.getDeptName());
+        dept.setDescription(adminAddDeptDTO.getDeptDesc());
+        deptSMapper.addDept(dept);
     }
 }

@@ -5,10 +5,10 @@ import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
 import com.oa_server.module.admin.depts.service.AdminDeptSService;
 import com.oa_server.module.admin.depts.vo.AdminDeptVO;
+import com.oa_server.module.admin.depts.dto.AdminAddDeptDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 部门管理接口
@@ -29,5 +29,14 @@ public class AdminDeptSController {
     @GetMapping("/dept-list")
     public Result<PageResult<AdminDeptVO>> getDeptList(AdminDeptQueryDTO adminDeptQueryDTO) {
         return Result.success(adminDeptSService.getDeptList(adminDeptQueryDTO));
+    }
+
+    /**
+     * 新增部门
+     */
+    @PostMapping("/dept-add")
+    public Result<Void> addDept(@Valid @RequestBody AdminAddDeptDTO adminAddDeptDTO) {
+        adminDeptSService.addDept(adminAddDeptDTO);
+        return Result.success();
     }
 }

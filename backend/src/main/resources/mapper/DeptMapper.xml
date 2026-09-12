@@ -18,7 +18,7 @@
         d.description AS description,
         d.created_at  AS createdAt,
         d.updated_at  AS updatedAt
-        FROM dept d
+        FROM `dept` d
         WHERE d.is_deleted = 0
         <!-- 部门名称模糊查询 -->
         <if test="adminDeptQueryDTO.name != null and adminDeptQueryDTO.name != ''">
@@ -40,5 +40,20 @@
         </if>
         ORDER BY d.created_at DESC
     </select>
+
+    <!-- 根据部门名称查询部门 -->
+    <select id="selectDeptByName" resultMap="DeptResultMapper">
+        SELECT id,dept_name,description,created_at,updated_at,is_deleted
+        FROM `dept`
+        WHERE dept_name = #{deptName}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 部门管理 - 新增部门 -->
+    <insert id="addDept" parameterType="com.oa_server.module.admin.depts.entity.Dept">
+        INSERT INTO `dept` (dept_name,description,created_at,updated_at)
+        VALUES (#{deptName},#{description},#{createdAt},#{updatedAt})
+    </insert>
 
 </mapper>
