@@ -86,4 +86,37 @@
         WHERE id = #{id} AND is_deleted = 0
     </update>
 
+    <!-- 员工管理 - 条件 + 分页查询员工列表 -->
+    <select id="selectEmpPage" resultType="com.oa_server.module.admin.emps.vo.AdminEmpVO">
+        SELECT e.emp_no   AS empNo,
+               e.name,
+               e.gender,
+               e.dept_id AS deptId,
+               e.job_id  AS jobId,
+               e.phone,
+               e.email,
+               e.hire_date AS hireDate,
+               e.account_status AS accountStatus
+        FROM `emp` e
+        WHERE e.is_deleted = 0
+        <if test="adminEmpQueryDTO.name != null and adminEmpQueryDTO.name != ''">
+            AND e.name LIKE CONCAT('%', #{query.name}, '%')
+        </if>
+        <if test="adminEmpQueryDTO.deptId != null">
+            AND e.dept_id = #{query.deptId}
+        </if>
+        <if test="adminEmpQueryDTO.jobId != null">
+            AND e.job_id = #{query.jobId}
+        </if>
+        <if test="adminEmpQueryDTO.hireDateStart != null">
+            AND e.hire_date <![CDATA[ >= ]]> #{query.hireDateStart}
+        </if>
+        <if test="adminEmpQueryDTO.hireDateEnd != null">
+            AND e.hire_date <![CDATA[ <= ]]> #{query.hireDateEnd}
+        </if>
+        <if test="adminEmpQueryDTO.accountStatus != null">
+            AND e.account_status = #{query.accountStatus}
+        </if>
+        ORDER BY e.created_at DESC
+    </select>
 </mapper>

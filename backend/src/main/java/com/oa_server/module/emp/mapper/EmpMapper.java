@@ -1,6 +1,9 @@
 package com.oa_server.module.emp.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
+import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 import com.oa_server.module.emp.entity.Emp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -29,4 +32,6 @@ public interface EmpMapper extends BaseMapper<Emp> {
     int updateAvatar(@Param("id") Long loginEmpId,@Param("avatar") String url);
 
     void changePassword(Emp emp);
+
+    Page<AdminEmpVO> selectEmpPage(Page<AdminEmpVO> page, AdminEmpQueryDTO adminEmpQueryDTO);
 }
