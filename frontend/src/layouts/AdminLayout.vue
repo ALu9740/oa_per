@@ -27,11 +27,10 @@
               <span>员工管理</span>
             </template>
           </el-menu-item>
-          <el-menu-item index="depts" disabled>
+          <el-menu-item index="/depts">
             <el-icon><OfficeBuilding /></el-icon>
             <template #title>
               <span>部门管理</span>
-              <span class="menu-tag">开发中</span>
             </template>
           </el-menu-item>
           <el-menu-item index="jobs" disabled>
@@ -149,9 +148,11 @@ const router = useRouter()
 const user = getUser()
 
 const isAdmin = computed(() => user?.roleType === 1)
-const activeMenu = computed(() =>
-  route.path.startsWith('/employees') ? '/employees' : '/home',
-)
+const activeMenu = computed(() => {
+  if (route.path.startsWith('/employees')) return '/employees'
+  if (route.path.startsWith('/depts')) return '/depts'
+  return '/home'
+})
 
 const avatarText = computed(() => {
   if (user?.name) return user.name.slice(0, 1)
@@ -171,7 +172,7 @@ const searchMenus = computed(() => {
   if (isAdmin.value) {
     items.push(
       { title: '员工管理', path: '/employees', icon: User },
-      { title: '部门管理', icon: OfficeBuilding, disabled: true },
+      { title: '部门管理', path: '/depts', icon: OfficeBuilding },
       { title: '职位管理', icon: Suitcase, disabled: true },
     )
   }

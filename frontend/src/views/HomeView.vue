@@ -151,6 +151,7 @@ const modules = [
     title: '部门管理',
     desc: '部门维护与组织架构管理',
     icon: OfficeBuilding,
+    path: '/depts',
   },
   {
     title: '职位管理',
