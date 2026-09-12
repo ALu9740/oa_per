@@ -10,6 +10,7 @@ import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
+import com.oa_server.module.admin.emps.dto.AdminUpdateAccountStatusDTO;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 import com.oa_server.module.emp.entity.Emp;
@@ -156,5 +157,25 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         empMapper.editEmp(emp);
 
         log.info("[管理员] 编辑员工：id={}",adminEditEmpDTO.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAccountStatus(AdminUpdateAccountStatusDTO adminUpdateAccountStatusDTO) {
+        //根据 id 查询员工是否存在
+        Emp emp = empMapper.findById(adminUpdateAccountStatusDTO.getId());
+        if(emp == null){
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+
+        //账号状态
+        if(ObjectUtil.isNotNull(adminUpdateAccountStatusDTO.getAccountStatus())){
+            emp.setAccountStatus(adminUpdateAccountStatusDTO.getAccountStatus());
+        }
+
+        //更新
+        empMapper.updateAccountStatus(emp);
+
+        log.info("[管理员] 更新账号状态：id={},accountStatus={}",adminUpdateAccountStatusDTO.getId(),adminUpdateAccountStatusDTO.getAccountStatus());
     }
 }

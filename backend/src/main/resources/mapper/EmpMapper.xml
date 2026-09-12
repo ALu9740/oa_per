@@ -150,4 +150,11 @@
     </set>
     WHERE id = #{id} AND is_deleted = 0
     </update>
+
+    <!-- 员工管理 - 更新账号状态 -->
+    <update id="updateAccountStatus">
+        UPDATE `emp`
+        SET account_status = #{accountStatus}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
 </mapper>

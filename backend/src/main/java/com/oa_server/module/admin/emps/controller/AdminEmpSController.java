@@ -6,6 +6,7 @@ import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
+import com.oa_server.module.admin.emps.dto.AdminUpdateAccountStatusDTO;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 import jakarta.validation.Valid;
@@ -48,6 +49,15 @@ public class AdminEmpSController {
     @PutMapping("/emp-edit")
     public Result<Void> editEmp(@Valid @RequestBody AdminEditEmpDTO adminEditEmpDTO) {
         adminEmpSService.editEmp(adminEditEmpDTO);
+        return Result.success();
+    }
+
+    /**
+     * 更新账号状态
+     */
+    @PutMapping("/emp-account-status")
+    public Result<Void> updateAccountStatus(@Valid @RequestBody AdminUpdateAccountStatusDTO adminUpdateAccountStatusDTO) {
+        adminEmpSService.updateAccountStatus(adminUpdateAccountStatusDTO);
         return Result.success();
     }
 }
