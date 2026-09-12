@@ -1,12 +1,5 @@
 <template>
-  <div class="profile-layout">
-    <header class="profile-header">
-      <button class="back-btn" @click="router.push('/home')">
-        <el-icon><Back /></el-icon>
-        返回首页
-      </button>
-    </header>
-
+  <div class="profile-page">
     <div class="profile-body">
       <!-- 左：用户卡片 -->
       <section class="profile-card">
@@ -173,7 +166,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Back, Camera } from '@element-plus/icons-vue'
+import { Camera } from '@element-plus/icons-vue'
 import { getEmpInfo, updateProfile, uploadAvatar, changePassword } from '../api/emp'
 import { getUser, updateUser, clearLogin } from '../utils/auth'
 
@@ -427,38 +420,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.profile-layout {
-  min-height: 100vh;
-  padding: 24px;
-  background: var(--oa-bg);
-}
-
-.profile-header {
-  max-width: 1080px;
-  margin: 0 auto 20px;
-}
-
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  font-size: 14px;
-  color: #4e5969;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.back-btn:hover {
-  color: var(--el-color-primary);
-}
-
 .profile-body {
   display: flex;
   gap: 20px;
-  max-width: 1080px;
-  margin: 0 auto;
 }
 
 .profile-card {

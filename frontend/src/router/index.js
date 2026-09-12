@@ -27,16 +27,29 @@ const routes = [
     meta: { title: '完善资料', requiresAuth: true },
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: () => import('../views/HomeView.vue'),
-    meta: { title: '首页', requiresAuth: true },
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('../views/ProfileView.vue'),
-    meta: { title: '个人信息', requiresAuth: true },
+    path: '/',
+    component: () => import('../layouts/AdminLayout.vue'),
+    redirect: '/home',
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component: () => import('../views/HomeView.vue'),
+        meta: { title: '首页', requiresAuth: true },
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('../views/ProfileView.vue'),
+        meta: { title: '个人信息', requiresAuth: true },
+      },
+      {
+        path: 'employees',
+        name: 'Employees',
+        component: () => import('../views/EmployeeView.vue'),
+        meta: { title: '员工管理', requiresAuth: true, requiresAdmin: true },
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',
@@ -62,6 +75,11 @@ router.beforeEach((to) => {
   // 未登录禁止访问需认证页面
   if (to.meta.requiresAuth && !token) {
     return { path: '/login', query: { redirect: to.fullPath } }
+  }
+
+  // 管理员专属页面：普通员工无权访问
+  if (to.meta.requiresAdmin && user?.roleType !== 1) {
+    return '/home'
   }
 
   // 账号待完善（accountStatus === 2）时，强制进入完善资料页
