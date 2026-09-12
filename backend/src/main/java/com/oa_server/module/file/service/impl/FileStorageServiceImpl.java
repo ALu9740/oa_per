@@ -1,4 +1,4 @@
-package com.oa_server.module.file.service.Impl;
+package com.oa_server.module.file.service.impl;
 
 import com.oa_server.module.file.service.FileStorageService;
 import io.minio.MinioClient;

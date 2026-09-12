@@ -1,4 +1,4 @@
-package com.oa_server.module.auth.service.Impl;
+package com.oa_server.module.auth.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
