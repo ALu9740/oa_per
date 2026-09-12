@@ -34,4 +34,8 @@ public interface EmpMapper extends BaseMapper<Emp> {
     void changePassword(Emp emp);
 
     Page<AdminEmpVO> selectEmpPage(Page<AdminEmpVO> page, AdminEmpQueryDTO adminEmpQueryDTO);
+
+    void addEmp(Emp emp);
+
+    Emp findByPhone(String phone);
 }

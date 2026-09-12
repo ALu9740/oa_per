@@ -119,4 +119,19 @@
         </if>
         ORDER BY e.created_at DESC
     </select>
+
+    <!-- 员工管理 - 新增员工 -->
+    <insert id="addEmp" parameterType="com.oa_server.module.emp.entity.Emp">
+        INSERT INTO `emp` (id, emp_no, name, gender, email, phone, password, dept_id, job_id, hire_date, role_type, account_status)
+        VALUES (#{id}, #{empNo}, #{name}, #{gender}, #{email}, #{phone}, #{password}, #{deptId}, #{jobId},#{hireDate}, #{roleType},#{accountStatus})
+    </insert>
+
+    <!-- 根据手机号查询员工 -->
+    <select id="findByPhone" resultMap="EmpResultMap">
+        SELECT id, emp_no, name, gender, phone, email, avatar, password,
+               dept_id, job_id, hire_date, role_type, account_status, created_at, updated_at
+        FROM `emp`
+        WHERE is_deleted = 0 AND phone = #{phone}
+            LIMIT 1
+    </select>
 </mapper>

@@ -37,6 +37,7 @@ public enum ResultCode {
     EMAIL_OR_PASSWORD_ERROR(2009, "邮箱或密码错误"),
     EMAIL_NOT_FOUND(2010, "邮箱不存在"),
     TOKEN_INVALID(2011, "Token 无效"),
+    PHONE_EXISTS(2012, "手机号已被注册"),
 
     /* 员工模块 3xxx */
     EMP_NOT_FOUND(3001, "员工不存在"),

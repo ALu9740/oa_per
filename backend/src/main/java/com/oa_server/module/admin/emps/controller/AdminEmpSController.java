@@ -3,13 +3,13 @@ package com.oa_server.module.admin.emps.controller;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
+import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *员工管理接口
@@ -32,4 +32,12 @@ public class AdminEmpSController {
         return Result.success(adminEmpSService.getEmpList(adminEmpQueryDTO));
     }
 
+    /**
+     * 新增员工
+     */
+    @PostMapping("/emp-add")
+    public Result<Void> addEmp(@Valid @RequestBody AdminAddEmpDTO adminAddEmpDTO) {
+        adminEmpSService.addEmp(adminAddEmpDTO);
+        return Result.success();
+    }
 }
