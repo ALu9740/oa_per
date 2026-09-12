@@ -1,11 +1,13 @@
 package com.oa_server.module.admin.depts.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
+import com.oa_server.module.admin.depts.dto.AdminEditDeptDTO;
 import com.oa_server.module.admin.depts.entity.Dept;
 import com.oa_server.module.admin.depts.mapper.DeptSMapper;
 import com.oa_server.module.admin.depts.service.AdminDeptSService;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * 部门管理 服务实现
@@ -65,4 +69,35 @@ public class AdminDeptSServiceImpl extends ServiceImpl<DeptSMapper, Dept> implem
         dept.setDescription(adminAddDeptDTO.getDeptDesc());
         deptSMapper.addDept(dept);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void editDept(AdminEditDeptDTO adminEditDeptDTO) {
+        //根据部门ID查询部门是否存在
+        Dept dept = deptSMapper.findByIdDept(adminEditDeptDTO.getId());
+        if(dept == null){
+            throw new BusinessException(ResultCode.DEPT_NOT_FOUND);
+        }
+        //部门名称是否重复
+        if (adminEditDeptDTO.getName() != null && !adminEditDeptDTO.getName().equals(dept.getDeptName())) {
+            Dept exitByNameDept = deptSMapper.selectDeptByName(adminEditDeptDTO.getName());
+            if(exitByNameDept != null) {
+                throw new BusinessException(ResultCode.DUPLICATE_NAME);
+            }
+        }
+        //部门名称
+        if (StrUtil.isNotBlank(adminEditDeptDTO.getName())) {
+            dept.setDeptName(adminEditDeptDTO.getName());
+        }
+        //部门描述
+        if (StrUtil.isNotBlank(adminEditDeptDTO.getDescription())) {
+            dept.setDescription(adminEditDeptDTO.getDescription());
+        }
+        //更新时间
+        dept.setUpdatedAt(LocalDateTime.now());
+        //更新部门信息
+        deptSMapper.editDept(dept);
+        log.info("[管理员] 编辑部门：id={}",adminEditDeptDTO.getId());
+    }
+
 }

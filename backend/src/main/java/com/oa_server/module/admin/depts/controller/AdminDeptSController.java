@@ -3,6 +3,7 @@ package com.oa_server.module.admin.depts.controller;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
+import com.oa_server.module.admin.depts.dto.AdminEditDeptDTO;
 import com.oa_server.module.admin.depts.service.AdminDeptSService;
 import com.oa_server.module.admin.depts.vo.AdminDeptVO;
 import com.oa_server.module.admin.depts.dto.AdminAddDeptDTO;
@@ -39,4 +40,14 @@ public class AdminDeptSController {
         adminDeptSService.addDept(adminAddDeptDTO);
         return Result.success();
     }
+
+    /**
+     * 编辑部门信息
+     */
+    @PutMapping("/dept-edit")
+    public Result<Void> editDept(@Valid @RequestBody AdminEditDeptDTO adminEditDeptDTO) {
+        adminDeptSService.editDept(adminEditDeptDTO);
+        return Result.success();
+    }
+
 }

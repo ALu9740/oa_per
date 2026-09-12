@@ -2,6 +2,7 @@ package com.oa_server.module.admin.depts.service;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
+import com.oa_server.module.admin.depts.dto.AdminEditDeptDTO;
 import com.oa_server.module.admin.depts.vo.AdminDeptVO;
 import com.oa_server.module.admin.depts.dto.AdminAddDeptDTO;
 
@@ -26,4 +27,11 @@ public interface AdminDeptSService {
      * @param adminAddDeptDTO 新增员工 DTO
      */
     void addDept(AdminAddDeptDTO adminAddDeptDTO);
+
+    /**
+     * 编辑部门信息
+     *
+     * @param adminEditDeptDTO 编辑员工信息 DTO
+     */
+    void editDept(AdminEditDeptDTO adminEditDeptDTO);
 }

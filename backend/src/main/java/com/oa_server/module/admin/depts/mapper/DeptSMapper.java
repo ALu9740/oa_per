@@ -18,7 +18,11 @@ import org.apache.ibatis.annotations.Param;
 public interface DeptSMapper extends BaseMapper<Dept> {
     Page<AdminDeptVO> selectDeptPage(Page<AdminDeptVO> page,@Param("adminDeptQueryDTO") AdminDeptQueryDTO adminDeptQueryDTO);
 
-    Dept selectDeptByName(String deptName);
+    Dept selectDeptByName(@Param("deptName") String deptName);
 
     void addDept(Dept dept);
+
+    Dept findByIdDept(@Param("id") Long id);
+
+    void editDept(Dept dept);
 }

@@ -56,4 +56,29 @@
         VALUES (#{deptName},#{description},#{createdAt},#{updatedAt})
     </insert>
 
+    <!-- 根据部门ID查询部门 -->
+    <select id="findByIdDept" resultMap="DeptResultMapper">
+        SELECT id,dept_name,description,created_at,updated_at,is_deleted
+        FROM `dept`
+        WHERE id = #{id}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 部门管理 - 更新部门信息 -->
+    <update id="editDept">
+        UPDATE `dept`
+        <set>
+            <if test="deptName != null">
+                dept_name = #{deptName},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            updated_at = #{updatedAt},
+        </set>
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
+
 </mapper>
