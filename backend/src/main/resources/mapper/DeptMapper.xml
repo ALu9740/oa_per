@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa_server.module.admin.depts.mapper.DeptSMapper">
+    <!-- 通用结果映射 -->
+    <resultMap id="DeptResultMapper" type="com.oa_server.module.admin.depts.entity.Dept">
+        <id column="id" property="id"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="description" property="description"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <!-- 部门管理 - 条件 + 分页查询部门列表 -->
+    <select id="selectDeptPage" resultType="com.oa_server.module.admin.depts.vo.AdminDeptVO">
+        SELECT d.id          AS id,
+        d.dept_name   AS deptName,
+        d.description AS description,
+        d.created_at  AS createdAt,
+        d.updated_at  AS updatedAt
+        FROM dept d
+        WHERE d.is_deleted = 0
+        <!-- 部门名称模糊查询 -->
+        <if test="adminDeptQueryDTO.name != null and adminDeptQueryDTO.name != ''">
+            AND d.dept_name LIKE CONCAT('%', #{adminDeptQueryDTO.name}, '%')
+        </if>
+        <!-- 创建时间范围 -->
+        <if test="adminDeptQueryDTO.createdAtStart != null">
+            AND d.created_at <![CDATA[ >= ]]> #{adminDeptQueryDTO.createdAtStart}
+        </if>
+        <if test="adminDeptQueryDTO.createdAtEnd != null">
+            AND d.created_at <![CDATA[ <= ]]> #{adminDeptQueryDTO.createdAtEnd}
+        </if>
+        <!-- 更新时间范围 -->
+        <if test="adminDeptQueryDTO.updatedAtStart != null">
+            AND d.updated_at <![CDATA[ >= ]]> #{adminDeptQueryDTO.updatedAtStart}
+        </if>
+        <if test="adminDeptQueryDTO.updatedAtEnd != null">
+            AND d.updated_at <![CDATA[ <= ]]> #{adminDeptQueryDTO.updatedAtEnd}
+        </if>
+        ORDER BY d.created_at DESC
+    </select>
+
+</mapper>
