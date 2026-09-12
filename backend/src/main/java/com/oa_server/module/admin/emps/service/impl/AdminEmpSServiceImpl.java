@@ -1,11 +1,14 @@
 package com.oa_server.module.admin.emps.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
+import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
@@ -87,5 +90,71 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         emp.setAccountStatus(EmpAccountStatusEnum.NORMAL.getCode());
         empMapper.addEmp(emp);
         log.info("[管理员] 新增员工：name={},email={}",adminAddEmpDTO.getName(),adminAddEmpDTO.getEmail());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void editEmp(AdminEditEmpDTO adminEditEmpDTO) {
+        //根据 id 查询员工是否存在
+        Emp emp = empMapper.findById(adminEditEmpDTO.getId());
+        if(emp == null){
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+
+        //邮箱唯一校验
+        if (adminEditEmpDTO.getEmail() != null && !adminEditEmpDTO.getEmail().equals(emp.getEmail())) {
+            Emp exitByEmailEmp = empMapper.findByEmail(adminEditEmpDTO.getEmail());
+            if (exitByEmailEmp != null) {
+                throw new BusinessException(ResultCode.EMAIL_EXISTS);
+            }
+        }
+
+        //手机号唯一校验
+        if (adminEditEmpDTO.getPhone() != null && !adminEditEmpDTO.getPhone().equals(emp.getPhone())) {
+            Emp exitByPhoneEmp = empMapper.findByPhone(adminEditEmpDTO.getPhone());
+            if (exitByPhoneEmp != null) {
+                throw new BusinessException(ResultCode.PHONE_EXISTS);
+            }
+        }
+
+        //姓名
+        if(StrUtil.isNotBlank(adminEditEmpDTO.getName())){
+            emp.setName(adminEditEmpDTO.getName());
+        }
+
+        //性别
+        if(ObjectUtil.isNotNull(adminEditEmpDTO.getGender())){
+            emp.setGender(adminEditEmpDTO.getGender());
+        }
+
+        //手机号
+        if(StrUtil.isNotBlank(adminEditEmpDTO.getPhone())){
+            emp.setPhone(adminEditEmpDTO.getPhone());
+        }
+
+        //邮箱
+        if(StrUtil.isNotBlank(adminEditEmpDTO.getEmail())){
+            emp.setEmail(adminEditEmpDTO.getEmail());
+        }
+
+        //部门ID
+        if(ObjectUtil.isNotNull(adminEditEmpDTO.getDeptId())){
+            emp.setDeptId(adminEditEmpDTO.getDeptId());
+        }
+
+        //职位ID
+        if(ObjectUtil.isNotNull(adminEditEmpDTO.getJobId())){
+            emp.setJobId(adminEditEmpDTO.getJobId());
+        }
+
+        //入职时间
+        if(ObjectUtil.isNotNull(adminEditEmpDTO.getHireDate())){
+            emp.setHireDate(adminEditEmpDTO.getHireDate());
+        }
+
+        //更新
+        empMapper.editEmp(emp);
+
+        log.info("[管理员] 编辑员工：id={}",adminEditEmpDTO.getId());
     }
 }

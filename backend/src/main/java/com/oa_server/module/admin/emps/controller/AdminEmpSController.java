@@ -4,6 +4,7 @@ package com.oa_server.module.admin.emps.controller;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
+import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
 import com.oa_server.module.admin.emps.service.AdminEmpSService;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
@@ -38,6 +39,15 @@ public class AdminEmpSController {
     @PostMapping("/emp-add")
     public Result<Void> addEmp(@Valid @RequestBody AdminAddEmpDTO adminAddEmpDTO) {
         adminEmpSService.addEmp(adminAddEmpDTO);
+        return Result.success();
+    }
+
+    /**
+     * 编辑员工信息
+     */
+    @PutMapping("/emp-edit")
+    public Result<Void> editEmp(@Valid @RequestBody AdminEditEmpDTO adminEditEmpDTO) {
+        adminEmpSService.editEmp(adminEditEmpDTO);
         return Result.success();
     }
 }

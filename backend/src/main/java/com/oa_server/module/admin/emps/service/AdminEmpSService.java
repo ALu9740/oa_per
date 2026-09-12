@@ -2,6 +2,7 @@ package com.oa_server.module.admin.emps.service;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.emps.dto.AdminAddEmpDTO;
+import com.oa_server.module.admin.emps.dto.AdminEditEmpDTO;
 import com.oa_server.module.admin.emps.dto.AdminEmpQueryDTO;
 import com.oa_server.module.admin.emps.vo.AdminEmpVO;
 
@@ -24,7 +25,13 @@ public interface AdminEmpSService {
      * 新增员工
 
      * @param adminAddEmpDTO 新增员工 DTO
-     * @return 是否新增成功
      */
     void addEmp(AdminAddEmpDTO adminAddEmpDTO);
+
+    /**
+     * 编辑员工信息
+     *
+     * @param adminEditEmpDTO 编辑员工信息 DTO
+     */
+    void editEmp(AdminEditEmpDTO adminEditEmpDTO);
 }

@@ -134,4 +134,20 @@
         WHERE is_deleted = 0 AND phone = #{phone}
             LIMIT 1
     </select>
+
+    <!-- 员工管理 - 更新员工资料 -->
+    <update id="editEmp">
+    UPDATE `emp`
+    <set>
+        <if test="name != null">name = #{name},</if>
+        <if test="gender != null">gender = #{gender},</if>
+        <if test="phone != null">phone = #{phone},</if>
+        <if test="email != null">email = #{email},</if>
+        <if test="deptId != null">dept_id = #{deptId},</if>
+        <if test="jobId != null">job_id = #{jobId},</if>
+        <if test="hireDate != null">hire_date = #{hireDate},</if>
+        <if test="accountStatus != null">account_status = #{accountStatus},</if>
+    </set>
+    WHERE id = #{id} AND is_deleted = 0
+    </update>
 </mapper>

@@ -38,4 +38,6 @@ public interface EmpMapper extends BaseMapper<Emp> {
     void addEmp(Emp emp);
 
     Emp findByPhone(String phone);
+
+    void editEmp(Emp emp);
 }
