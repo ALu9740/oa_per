@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 
@@ -128,6 +129,10 @@ public class AuthServiceImpl implements AuthService {
 
         emp.setRoleType(EmpRoleTypeEnum.NORMAL.getCode());
 
+        //设置时间
+        emp.setCreatedAt(LocalDateTime.now());
+        emp.setUpdatedAt(LocalDateTime.now());
+
         empMapper.insertEmp(emp);
 
         //删除已使用验证码
@@ -177,6 +182,8 @@ public class AuthServiceImpl implements AuthService {
         }
         //更新密码
         emp.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        //设置时间
+        emp.setUpdatedAt(LocalDateTime.now());
         empMapper.resetPassword(emp);
 
         //删除已使用验证码

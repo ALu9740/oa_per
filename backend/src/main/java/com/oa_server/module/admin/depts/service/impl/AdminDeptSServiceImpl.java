@@ -67,6 +67,10 @@ public class AdminDeptSServiceImpl extends ServiceImpl<DeptSMapper, Dept> implem
         Dept dept = new Dept();
         dept.setDeptName(adminAddDeptDTO.getDeptName());
         dept.setDescription(adminAddDeptDTO.getDeptDesc());
+        //创建时间
+        dept.setCreatedAt(LocalDateTime.now());
+        //更新时间
+        dept.setUpdatedAt(LocalDateTime.now());
         deptSMapper.addDept(dept);
     }
 

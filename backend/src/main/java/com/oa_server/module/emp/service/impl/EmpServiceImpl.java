@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.UUID;
@@ -74,7 +75,8 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
                 completeProfileDTO.getName(),
                 completeProfileDTO.getGender(),
                 completeProfileDTO.getPhone(),
-                EmpAccountStatusEnum.NORMAL.getCode());
+                EmpAccountStatusEnum.NORMAL.getCode(),
+                LocalDateTime.now());
 
         if (rows == 0) {
             throw new BusinessException(ResultCode.FORBIDDEN);
@@ -129,7 +131,8 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         int rows = empMapper.updateProfile(emp.getId(),
                 emp.getName(),
                 emp.getGender(),
-                emp.getPhone());
+                emp.getPhone(),
+                LocalDateTime.now());
 
         if (rows == 0) {
             log.warn("[更新员工资料] 更新失败，账号状态不允许: id={}", loginEmpId);
@@ -189,7 +192,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
             throw new BusinessException(ResultCode.PARAM_INVALID, EmpAvatarEnum.AVATAR_UPLOAD_FAILED.getMessage());
         }
         // 更新员工头像
-        int rows = empMapper.updateAvatar(loginEmpId, url);
+        int rows = empMapper.updateAvatar(loginEmpId, url, LocalDateTime.now());
         if (rows == 0) {
             log.warn("[更新员工头像] 更新失败，员工不存在或已被删除: id={}", loginEmpId);
             throw new BusinessException(ResultCode.EMP_NOT_FOUND);
@@ -219,6 +222,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
 
         //更新密码
         emp.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        emp.setUpdatedAt(LocalDateTime.now());
         empMapper.changePassword(emp);
 
         log.info("[员工] 修改密码成功, empId={}", loginEmpId);

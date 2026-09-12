@@ -33,8 +33,27 @@
 
     <!-- 新增员工 -->
     <insert id="insertEmp" parameterType="com.oa_server.module.emp.entity.Emp">
-        INSERT INTO `emp` (id, emp_no, email, password, role_type, account_status)
-        VALUES (#{id}, #{empNo}, #{email}, #{password},#{roleType},#{accountStatus})
+        INSERT INTO `emp`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="empNo != null">emp_no,</if>
+            <if test="email != null">email,</if>
+            <if test="password != null">password,</if>
+            <if test="roleType != null">role_type,</if>
+            <if test="accountStatus != null">account_status,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="empNo != null">#{empNo},</if>
+            <if test="email != null">#{email},</if>
+            <if test="password != null">#{password},</if>
+            <if test="roleType != null">#{roleType},</if>
+            <if test="accountStatus != null">#{accountStatus},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
     </insert>
 
     <!-- 根据主键查询 -->
@@ -52,14 +71,22 @@
         SET name         = #{name},
             gender       = #{gender},
             phone        = #{phone},
-            account_status = #{accountStatus}
+            account_status = #{accountStatus},
+            updated_at     = #{updatedAt}
         WHERE id = #{id} AND is_deleted = 0 AND account_status = 2
     </update>
 
     <!-- 重置密码 -->
     <update id="resetPassword">
         UPDATE `emp`
-        SET password = #{password}
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt},
+            </if>
+        </set>
         WHERE id = #{id} AND is_deleted = 0
     </update>
 
@@ -68,21 +95,24 @@
         UPDATE `emp`
         SET name         = #{name},
             gender       = #{gender},
-            phone        = #{phone}
+            phone        = #{phone} ,
+            updated_at     = #{updatedAt}
         WHERE id = #{id} AND is_deleted = 0 AND account_status = 1
     </update>
 
     <!-- 更新员工头像 -->
     <update id="updateAvatar">
         UPDATE `emp`
-        SET avatar = #{avatar}
+        SET avatar = #{avatar},
+            updated_at     = #{updatedAt}
         WHERE id = #{id} AND is_deleted = 0
     </update>
 
     <!-- 更新密码 -->
     <update id="changePassword">
         UPDATE `emp`
-        SET password = #{password}
+        SET password = #{password},
+            updated_at     = #{updatedAt}
         WHERE id = #{id} AND is_deleted = 0
     </update>
 
@@ -127,8 +157,39 @@
 
     <!-- 员工管理 - 新增员工 -->
     <insert id="addEmp" parameterType="com.oa_server.module.emp.entity.Emp">
-        INSERT INTO `emp` (id, emp_no, name, gender, email, phone, password, dept_id, job_id, hire_date, role_type, account_status)
-        VALUES (#{id}, #{empNo}, #{name}, #{gender}, #{email}, #{phone}, #{password}, #{deptId}, #{jobId},#{hireDate}, #{roleType},#{accountStatus})
+        INSERT INTO `emp`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="empNo != null and empNo != ''">emp_no,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="gender != null">gender,</if>
+            <if test="email != null and email != ''">email,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="jobId != null">job_id,</if>
+            <if test="hireDate != null">hire_date,</if>
+            <if test="roleType != null">role_type,</if>
+            <if test="accountStatus != null">account_status,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="empNo != null and empNo != ''">#{empNo},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="email != null and email != ''">#{email},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="jobId != null">#{jobId},</if>
+            <if test="hireDate != null">#{hireDate},</if>
+            <if test="roleType != null">#{roleType},</if>
+            <if test="accountStatus != null">#{accountStatus},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
     </insert>
 
     <!-- 根据手机号查询员工 -->
@@ -152,6 +213,7 @@
         <if test="jobId != null">job_id = #{jobId},</if>
         <if test="hireDate != null">hire_date = #{hireDate},</if>
         <if test="accountStatus != null">account_status = #{accountStatus},</if>
+        <if test="updatedAt != null">updated_at = #{updatedAt},</if>
     </set>
     WHERE id = #{id} AND is_deleted = 0
     </update>
@@ -159,7 +221,10 @@
     <!-- 员工管理 - 更新账号状态 -->
     <update id="updateAccountStatus">
         UPDATE `emp`
-        SET account_status = #{accountStatus}
+        <set>
+            <if test="accountStatus != null"> account_status = #{accountStatus},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </set>
         WHERE id = #{id} AND is_deleted = 0
     </update>
 

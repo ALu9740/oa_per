@@ -9,6 +9,7 @@ import com.oa_server.module.emp.entity.Emp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,13 +27,13 @@ public interface EmpMapper extends BaseMapper<Emp> {
 
     int insertEmp(Emp emp);
 
-    int completeProfile(@Param("id") Long id, @Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone, @Param("accountStatus") Integer accountStatus);
+    int completeProfile(@Param("id") Long id, @Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone, @Param("accountStatus") Integer accountStatus, @Param("updatedAt") LocalDateTime updatedAt);
 
     void resetPassword(Emp emp);
 
-    int updateProfile(@Param("id") Long id, @Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone);
+    int updateProfile(@Param("id") Long id, @Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone, @Param("updatedAt") LocalDateTime updatedAt);
 
-    int updateAvatar(@Param("id") Long loginEmpId,@Param("avatar") String url);
+    int updateAvatar(@Param("id") Long loginEmpId,@Param("avatar") String url, @Param("updatedAt") LocalDateTime updatedAt);
 
     void changePassword(Emp emp);
 
@@ -40,7 +41,7 @@ public interface EmpMapper extends BaseMapper<Emp> {
 
     void addEmp(Emp emp);
 
-    Emp findByPhone(String phone);
+    Emp findByPhone(@Param("phone") String phone);
 
     void editEmp(Emp emp);
 

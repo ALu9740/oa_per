@@ -52,8 +52,19 @@
 
     <!-- 部门管理 - 新增部门 -->
     <insert id="addDept" parameterType="com.oa_server.module.admin.depts.entity.Dept">
-        INSERT INTO `dept` (dept_name,description,created_at,updated_at)
-        VALUES (#{deptName},#{description},#{createdAt},#{updatedAt})
+        INSERT INTO `dept`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptName != null and deptName != ''">dept_name,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="deptName != null and deptName != ''">#{deptName},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
     </insert>
 
     <!-- 根据部门ID查询部门 -->
@@ -75,7 +86,9 @@
             <if test="description != null">
                 description = #{description},
             </if>
-            updated_at = #{updatedAt},
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt},
+            </if>
         </set>
         WHERE id = #{id}
         AND is_deleted = 0

@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -89,6 +90,10 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         emp.setHireDate(adminAddEmpDTO.getHireDate());
         emp.setRoleType(EmpRoleTypeEnum.NORMAL.getCode());
         emp.setAccountStatus(EmpAccountStatusEnum.NORMAL.getCode());
+        //创建时间
+        emp.setCreatedAt(LocalDateTime.now());
+        //更新时间
+        emp.setUpdatedAt(LocalDateTime.now());
         empMapper.addEmp(emp);
         log.info("[管理员] 新增员工：name={},email={}",adminAddEmpDTO.getName(),adminAddEmpDTO.getEmail());
     }
@@ -153,6 +158,9 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
             emp.setHireDate(adminEditEmpDTO.getHireDate());
         }
 
+        //更新时间
+        emp.setUpdatedAt(LocalDateTime.now());
+
         //更新
         empMapper.editEmp(emp);
 
@@ -172,6 +180,9 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         if(ObjectUtil.isNotNull(adminUpdateAccountStatusDTO.getAccountStatus())){
             emp.setAccountStatus(adminUpdateAccountStatusDTO.getAccountStatus());
         }
+
+        //更新时间
+        emp.setUpdatedAt(LocalDateTime.now());
 
         //更新
         empMapper.updateAccountStatus(emp);
