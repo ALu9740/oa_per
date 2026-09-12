@@ -1,4 +1,4 @@
-package com.oa_server.module.emp.service.Impl;
+package com.oa_server.module.emp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
+import com.oa_server.module.emp.dto.ChangePasswordDTO;
 import com.oa_server.module.emp.dto.UpdateProfileDTO;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
@@ -20,6 +21,7 @@ import com.oa_server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +45,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
     private final EmpMapper empMapper;
 
     private final FileStorageService fileStorageService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public EmpVO empToEmpVO(Emp emp) {
@@ -193,6 +196,32 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         }
         log.info("[更新员工头像] id={} 员工头像={}", loginEmpId, url);
         return url;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void changePassword(ChangePasswordDTO changePasswordDTO) {
+        Long loginEmpId = SecurityUtils.getCurrentEmpId();
+        Emp emp = empMapper.findById(loginEmpId);
+        if (emp == null) {
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+
+        // 校验旧密码
+        if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), emp.getPassword())) {
+            throw new BusinessException(ResultCode.OLD_PASSWORD_ERROR);
+        }
+
+        // 校验新密码是否与旧密码相同
+        if (changePasswordDTO.getNewPassword().equals(changePasswordDTO.getOldPassword())) {
+            throw new BusinessException(ResultCode.PARAM_INVALID, "新密码不能与旧密码相同");
+        }
+
+        //更新密码
+        emp.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        empMapper.changePassword(emp);
+
+        log.info("[员工] 修改密码成功, empId={}", loginEmpId);
     }
 }
 

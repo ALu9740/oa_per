@@ -66,13 +66,15 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+                        // CORS 预检请求全部放行
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // 白名单：登录/注册等无需登录
                         .requestMatchers(WHITE_LIST).permitAll()
-                        // 个人中心接口：登录即可访问
-                        .requestMatchers(HttpMethod.GET, "/api/emp/*").authenticated()
-                        .requestMatchers("/api/emp/update-profile", "/api/emp/upload-avatar").authenticated()
-                        // 管理员专属（员工/部门/职位管理的其余接口）
-                        .requestMatchers("/api/emp/**", "/api/dept/**", "/api/job/**").hasRole("ADMIN")
+                        // 员工个人中心：/api/emp/** 登录即可访问
+                        .requestMatchers("/api/emp/**").authenticated()
+                        // 管理员专属：/api/admin/** 必须 ADMIN 角色
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 其余：默认登录即可
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -2,6 +2,7 @@ package com.oa_server.module.emp.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
+import com.oa_server.module.emp.dto.ChangePasswordDTO;
 import com.oa_server.module.emp.dto.UpdateProfileDTO;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.vo.EmpVO;
@@ -52,4 +53,11 @@ public interface EmpService extends IService<Emp> {
      * @return 头像图片的 URL
      */
     String uploadAvatar(String base64);
+
+    /**
+     * 修改密码
+     *
+     * @param changePasswordDTO 修改密码 DTO
+     */
+    void changePassword(ChangePasswordDTO changePasswordDTO);
 }

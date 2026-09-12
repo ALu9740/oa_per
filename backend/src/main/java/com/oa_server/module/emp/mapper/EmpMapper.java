@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
+ * 员工 Mapper 接口
+ *
  * @author Alu
  * @date 2026-09-09
  */
@@ -25,4 +27,6 @@ public interface EmpMapper extends BaseMapper<Emp> {
     int updateProfile(@Param("id") Long id, @Param("name") String name, @Param("gender") Integer gender, @Param("phone") String phone);
 
     int updateAvatar(@Param("id") Long loginEmpId,@Param("avatar") String url);
+
+    void changePassword(Emp emp);
 }

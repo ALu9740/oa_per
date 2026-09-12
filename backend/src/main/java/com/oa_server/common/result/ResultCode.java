@@ -40,6 +40,7 @@ public enum ResultCode {
 
     /* 员工模块 3xxx */
     EMP_NOT_FOUND(3001, "员工不存在"),
+    OLD_PASSWORD_ERROR(3002, "旧密码不正确"),
     ;
 
     private final Integer code;

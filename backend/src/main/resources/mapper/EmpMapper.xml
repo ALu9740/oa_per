@@ -39,7 +39,7 @@
 
     <!-- 根据主键查询 -->
     <select id="findById" resultMap="EmpResultMap">
-        SELECT id, emp_no, name, gender, phone, email, avatar,
+        SELECT id, emp_no, name, gender, phone, email, avatar, password,
                dept_id, job_id, hire_date, role_type, account_status, created_at, updated_at
         FROM `emp`
         WHERE is_deleted = 0 AND id = #{id}
@@ -76,6 +76,13 @@
     <update id="updateAvatar">
         UPDATE `emp`
         SET avatar = #{avatar}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 更新密码 -->
+    <update id="changePassword">
+        UPDATE `emp`
+        SET password = #{password}
         WHERE id = #{id} AND is_deleted = 0
     </update>
 

@@ -1,6 +1,7 @@
 package com.oa_server.module.emp.controller;
 
 import com.oa_server.common.result.Result;
+import com.oa_server.module.emp.dto.ChangePasswordDTO;
 import com.oa_server.module.emp.dto.UpdateProfileDTO;
 import com.oa_server.module.emp.service.EmpService;
 import com.oa_server.module.emp.vo.EmpVO;
@@ -47,6 +48,15 @@ public class EmpController {
     public Result<String> uploadAvatar(@RequestBody Map<String, String> body){
         String base64 = body.get("base64");
         return Result.success(empService.uploadAvatar(base64));
+    }
+
+    /**
+     * 修改密码
+     */
+    @PutMapping("/change-password")
+    public Result<String> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO){
+        empService.changePassword(changePasswordDTO);
+        return Result.success();
     }
 
 }
