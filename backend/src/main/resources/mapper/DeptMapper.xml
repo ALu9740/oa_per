@@ -94,4 +94,38 @@
         AND is_deleted = 0
     </update>
 
+    <!-- 统计指定 ID 列表中存在的有效部门数量 -->
+    <select id="countByIds" resultType="int">
+        SELECT COUNT(*)
+        FROM `dept`
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 批量逻辑删除部门 -->
+    <update id="batchDeleteByIds">
+        UPDATE `dept`
+        SET is_deleted = 1
+        WHERE is_deleted = 0
+          AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 查询指定部门中哪些部门下有员工 -->
+    <select id="selectDeptIdsWithEmployees" resultType="long">
+        SELECT DISTINCT e.dept_id
+        FROM `emp` e
+        WHERE e.is_deleted = 0
+          AND e.dept_id IS NOT NULL
+          AND e.dept_id IN
+        <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+    </select>
+
 </mapper>

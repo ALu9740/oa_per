@@ -2,6 +2,7 @@ package com.oa_server.module.admin.depts.controller;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
+import com.oa_server.module.admin.depts.dto.AdminBatchDeleteDeptDTO;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
 import com.oa_server.module.admin.depts.dto.AdminEditDeptDTO;
 import com.oa_server.module.admin.depts.service.AdminDeptSService;
@@ -50,4 +51,12 @@ public class AdminDeptSController {
         return Result.success();
     }
 
+    /**
+     * 批量删除部门
+     */
+    @PutMapping("/dept-batch-delete")
+    public Result<Void> batchDeleteDept(@Valid @RequestBody AdminBatchDeleteDeptDTO adminBatchDeleteDeptDTO) {
+        adminDeptSService.batchDeleteDept(adminBatchDeleteDeptDTO);
+        return Result.success();
+    }
 }

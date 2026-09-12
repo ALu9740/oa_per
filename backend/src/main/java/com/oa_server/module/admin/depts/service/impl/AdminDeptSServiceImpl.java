@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.ResultCode;
+import com.oa_server.module.admin.depts.dto.AdminBatchDeleteDeptDTO;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
 import com.oa_server.module.admin.depts.dto.AdminEditDeptDTO;
 import com.oa_server.module.admin.depts.entity.Dept;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 部门管理 服务实现
@@ -102,6 +104,28 @@ public class AdminDeptSServiceImpl extends ServiceImpl<DeptSMapper, Dept> implem
         //更新部门信息
         deptSMapper.editDept(dept);
         log.info("[管理员] 编辑部门：id={}",adminEditDeptDTO.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDeleteDept(AdminBatchDeleteDeptDTO adminBatchDeleteDeptDTO) {
+        List<Long> ids = adminBatchDeleteDeptDTO.getDeptIds();
+        //校验部门是否存在
+        int exitCount = deptSMapper.countByIds(ids);
+        if(exitCount != ids.size()){
+            throw new BusinessException(ResultCode.DEPT_NOT_FOUND);
+        }
+
+        //校验部门下是否有员工
+        List<Long> deptWithEmp = deptSMapper.selectDeptIdsWithEmployees(ids);
+        if (!deptWithEmp.isEmpty()) {
+            throw new BusinessException(ResultCode.DEPT_HAS_EMPLOYEES);
+        }
+
+        //批量删除部门
+        deptSMapper.batchDeleteByIds(ids);
+
+        log.info("[管理员] 批量删除部门：共{}个部门, ids={}", ids.size(), ids);
     }
 
 }

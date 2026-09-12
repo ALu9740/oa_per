@@ -1,6 +1,7 @@
 package com.oa_server.module.admin.depts.service;
 
 import com.oa_server.common.result.PageResult;
+import com.oa_server.module.admin.depts.dto.AdminBatchDeleteDeptDTO;
 import com.oa_server.module.admin.depts.dto.AdminDeptQueryDTO;
 import com.oa_server.module.admin.depts.dto.AdminEditDeptDTO;
 import com.oa_server.module.admin.depts.vo.AdminDeptVO;
@@ -34,4 +35,11 @@ public interface AdminDeptSService {
      * @param adminEditDeptDTO 编辑员工信息 DTO
      */
     void editDept(AdminEditDeptDTO adminEditDeptDTO);
+
+    /**
+     * 批量删除部门
+     *
+     * @param adminBatchDeleteDeptDTO 批量删除部门 DTO
+     */
+    void batchDeleteDept(AdminBatchDeleteDeptDTO adminBatchDeleteDeptDTO);
 }

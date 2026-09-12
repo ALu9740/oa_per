@@ -8,6 +8,8 @@ import com.oa_server.module.admin.depts.vo.AdminDeptVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 部门 Mapper 接口
  *
@@ -25,4 +27,10 @@ public interface DeptSMapper extends BaseMapper<Dept> {
     Dept findByIdDept(@Param("id") Long id);
 
     void editDept(Dept dept);
+
+    int countByIds(@Param("ids") List<Long> ids);
+
+    void batchDeleteByIds(@Param("ids") List<Long> ids);
+
+    List<Long> selectDeptIdsWithEmployees(@Param("deptIds") List<Long> deptIds);
 }
