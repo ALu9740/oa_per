@@ -3,6 +3,7 @@ package com.oa_server.module.admin.jobs.controller;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
+import com.oa_server.module.admin.jobs.dto.AdminBatchDeleteJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminEditJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.service.AdminJobSService;
@@ -46,6 +47,15 @@ public class AdminJobSController {
     @PutMapping("/job-edit")
     public Result<Void> editJob(@Valid @RequestBody AdminEditJobDTO adminEditJobDTO) {
         adminJobSService.editJob(adminEditJobDTO);
+        return Result.success();
+    }
+
+    /**
+     * 批量删除职位
+     */
+    @DeleteMapping("/job-batch-delete")
+    public Result<Void> batchDeleteByIds(@Valid @RequestBody AdminBatchDeleteJobDTO adminBatchDeleteJobDTO) {
+        adminJobSService.batchDeleteJob(adminBatchDeleteJobDTO);
         return Result.success();
     }
 }

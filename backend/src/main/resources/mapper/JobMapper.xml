@@ -93,4 +93,33 @@
         AND is_deleted = 0
     </update>
 
+    <!-- 统计指定 ID 列表中存在的有效职位数量 -->
+    <select id="countByIds" resultType="int">
+        SELECT COUNT(*) FROM `job` WHERE is_deleted = 0 AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 查询指定职位中哪些职位下有员工 -->
+    <select id="selectIdsWithEmps" resultType="long">
+        SELECT DISTINCT e.job_id
+        FROM `emp` e
+        WHERE e.is_deleted = 0
+          AND e.job_id IS NOT NULL
+          AND e.job_id IN
+        <foreach collection="jobIds" item="jobId" open="(" separator="," close=")">
+            #{jobId}
+        </foreach>
+    </select>
+
+    <!-- 批量删除职位 -->
+    <update id="batchDeleteByIds">
+        UPDATE `job`
+        SET is_deleted = 1
+        WHERE is_deleted = 0 AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

@@ -8,6 +8,7 @@ import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
+import com.oa_server.module.admin.jobs.dto.AdminBatchDeleteJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminEditJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.entity.Job;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 职位管理 服务实现
@@ -105,6 +107,26 @@ public class AdminJobSServiceImpl extends ServiceImpl<JobSMapper, Job> implement
         //更新
         jobSMapper.updateJob(job);
         log.info("[管理员] 更新职位：id={}", adminEditJobDTO.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDeleteJob(AdminBatchDeleteJobDTO adminBatchDeleteJobDTO) {
+        List<Long> ids = adminBatchDeleteJobDTO.getJobIds();
+        //检查职位是否存在
+        int exitCount = jobSMapper.countByIds(ids);
+        if(exitCount != ids.size()){
+            throw new BusinessException(ResultCode.NOT_FOUND_JOB);
+        }
+
+        //检查职位下是否有员工
+        List<Long> jobWithEmp = jobSMapper.selectIdsWithEmps(ids);
+        if  (!jobWithEmp.isEmpty()){
+            throw new BusinessException(ResultCode.JOB_HAS_EMPLOYEES);
+        }
+        //批量删除职位
+        jobSMapper.batchDeleteByIds(ids);
+        log.info("[管理员] 批量删除职位：共{}个职位, ids={}", ids.size(), ids);
     }
 
 }

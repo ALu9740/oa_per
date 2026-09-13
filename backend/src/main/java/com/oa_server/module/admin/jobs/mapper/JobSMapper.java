@@ -8,6 +8,8 @@ import com.oa_server.module.admin.jobs.vo.AdminJobVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 职位 Mapper 接口
  *
@@ -25,4 +27,10 @@ public interface JobSMapper extends BaseMapper<Job> {
     Job findByIdJob(@Param("id") Long id);
 
     void updateJob(Job job);
+
+    int countByIds(@Param("ids") List<Long> ids);
+
+    List<Long> selectIdsWithEmps(@Param("jobIds") List<Long> ids);
+
+    void batchDeleteByIds(@Param("ids") List<Long> ids);
 }

@@ -51,6 +51,7 @@ public enum ResultCode {
     /* 职位模块 5xxx */
     DUPLICATE_NAME_JOB(5001, "职位名称已存在"),
     NOT_FOUND_JOB(5002, "职位不存在"),
+    JOB_HAS_EMPLOYEES(5003, "该职位下存在员工，无法删除"),
 
     ;
 

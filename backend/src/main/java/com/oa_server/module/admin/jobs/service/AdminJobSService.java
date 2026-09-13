@@ -2,6 +2,7 @@ package com.oa_server.module.admin.jobs.service;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
+import com.oa_server.module.admin.jobs.dto.AdminBatchDeleteJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminEditJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.vo.AdminJobVO;
@@ -34,4 +35,11 @@ public interface AdminJobSService {
      * @param adminEditJobDTO 编辑职位信息 DTO
      */
     void editJob(AdminEditJobDTO adminEditJobDTO);
+
+    /**
+     * 批量删除职位
+     *
+     * @param adminBatchDeleteJobDTO 批量删除职位 DTO
+     */
+    void batchDeleteJob(AdminBatchDeleteJobDTO adminBatchDeleteJobDTO);
 }
