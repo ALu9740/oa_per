@@ -21,4 +21,8 @@ public interface JobSMapper extends BaseMapper<Job> {
     Job selectJobByName(@Param("jobName") String jobName);
 
     void addJob(Job job);
+
+    Job findByIdJob(@Param("id") Long id);
+
+    void updateJob(Job job);
 }

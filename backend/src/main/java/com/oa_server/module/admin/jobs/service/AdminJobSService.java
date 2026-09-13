@@ -2,6 +2,7 @@ package com.oa_server.module.admin.jobs.service;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
+import com.oa_server.module.admin.jobs.dto.AdminEditJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.vo.AdminJobVO;
 
@@ -26,4 +27,11 @@ public interface AdminJobSService {
      * @param adminAddDeptDTO 新增职位 DTO
      */
     void addJob(AdminAddJobDTO adminAddDeptDTO);
+
+    /**
+     * 编辑职位
+     *
+     * @param adminEditJobDTO 编辑职位信息 DTO
+     */
+    void editJob(AdminEditJobDTO adminEditJobDTO);
 }

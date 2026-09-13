@@ -50,6 +50,7 @@ public enum ResultCode {
 
     /* 职位模块 5xxx */
     DUPLICATE_NAME_JOB(5001, "职位名称已存在"),
+    NOT_FOUND_JOB(5002, "职位不存在"),
 
     ;
 

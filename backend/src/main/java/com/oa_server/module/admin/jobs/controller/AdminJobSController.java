@@ -3,6 +3,7 @@ package com.oa_server.module.admin.jobs.controller;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
+import com.oa_server.module.admin.jobs.dto.AdminEditJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.service.AdminJobSService;
 import com.oa_server.module.admin.jobs.vo.AdminJobVO;
@@ -39,4 +40,12 @@ public class AdminJobSController {
         return Result.success();
     }
 
+    /**
+     * 编辑职位信息
+     */
+    @PutMapping("/job-edit")
+    public Result<Void> editJob(@Valid @RequestBody AdminEditJobDTO adminEditJobDTO) {
+        adminJobSService.editJob(adminEditJobDTO);
+        return Result.success();
+    }
 }

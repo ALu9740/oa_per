@@ -66,4 +66,31 @@
         </trim>
     </insert>
 
+    <!-- 根据职位ID查询职位 -->
+    <select id="findByIdJob" resultMap="JobResultMapper">
+        SELECT id,job_name,sort,created_at,updated_at,is_deleted
+        FROM `job`
+        WHERE id = #{id}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 职位管理 - 更新职位信息 -->
+    <update id="updateJob">
+        UPDATE `job`
+        <set>
+            <if test="jobName != null">
+                job_name = #{jobName},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt},
+            </if>
+        </set>
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
+
 </mapper>
