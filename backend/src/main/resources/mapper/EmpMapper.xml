@@ -254,7 +254,7 @@
         SELECT id, dept_name AS name
         FROM `dept`
         WHERE is_deleted = 0
-        ORDER BY id
+        ORDER BY updated_at ASC
     </select>
 
     <!-- 员工管理 - 职位选项列表 -->
@@ -262,6 +262,6 @@
         SELECT id, job_name AS name
         FROM `job`
         WHERE is_deleted = 0
-        ORDER BY id
+        ORDER BY sort ASC,updated_at ASC
     </select>
 </mapper>
