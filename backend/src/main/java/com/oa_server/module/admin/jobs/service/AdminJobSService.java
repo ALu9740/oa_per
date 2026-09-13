@@ -1,6 +1,7 @@
 package com.oa_server.module.admin.jobs.service;
 
 import com.oa_server.common.result.PageResult;
+import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.vo.AdminJobVO;
 
@@ -18,4 +19,11 @@ public interface AdminJobSService {
      * @return 分页结果
      */
     PageResult<AdminJobVO> getJobList(AdminJobQueryDTO adminJobQueryDTO);
+
+    /**
+     * 新增职位
+     *
+     * @param adminAddDeptDTO 新增职位 DTO
+     */
+    void addJob(AdminAddJobDTO adminAddDeptDTO);
 }

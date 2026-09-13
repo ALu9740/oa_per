@@ -2,7 +2,10 @@ package com.oa_server.module.admin.jobs.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.PageResult;
+import com.oa_server.common.result.ResultCode;
+import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.entity.Job;
 import com.oa_server.module.admin.jobs.mapper.JobSMapper;
@@ -11,6 +14,9 @@ import com.oa_server.module.admin.jobs.vo.AdminJobVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * 职位管理 服务实现
@@ -45,4 +51,27 @@ public class AdminJobSServiceImpl extends ServiceImpl<JobSMapper, Job> implement
                 result.getRecords()
         );
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addJob(AdminAddJobDTO adminAddJobDTO) {
+        //根据职位名称查询职位是否存在
+        Job exitJob = jobSMapper.selectJobByName(adminAddJobDTO.getJobName());
+
+        if(exitJob != null){
+            throw new BusinessException(ResultCode.DUPLICATE_NAME_JOB);
+        }
+
+        // 创建职位
+        Job job = new Job();
+        job.setJobName(adminAddJobDTO.getJobName());
+        job.setSort(adminAddJobDTO.getSort() != null ? adminAddJobDTO.getSort() : 0);
+        //创建时间
+        job.setCreatedAt(LocalDateTime.now());
+        //更新时间
+        job.setUpdatedAt(LocalDateTime.now());
+        jobSMapper.addJob(job);
+        log.info("新增职位成功，职位名称：{}", job.getJobName());
+    }
+
 }

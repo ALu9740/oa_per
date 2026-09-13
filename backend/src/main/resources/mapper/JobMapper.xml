@@ -40,4 +40,30 @@
         ORDER BY j.sort ASC, j.updated_at ASC
     </select>
 
+    <!-- 根据职位名称查询职位 -->
+    <select id="selectJobByName" resultMap="JobResultMapper">
+        SELECT id,job_name,sort,created_at,updated_at,is_deleted
+        FROM `job`
+        WHERE job_name = #{jobName}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 职位管理 - 新增职位 -->
+    <insert id="addJob" parameterType="com.oa_server.module.admin.jobs.entity.Job">
+        INSERT INTO `job`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobName != null and jobName != ''">job_name,</if>
+            <if test="sort != null">sort,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="jobName != null and jobName != ''">#{jobName},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
+    </insert>
+
 </mapper>

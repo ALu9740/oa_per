@@ -47,6 +47,10 @@ public enum ResultCode {
     DUPLICATE_NAME(4001, "部门名称已存在"),
     DEPT_NOT_FOUND(4002, "部门不存在"),
     DEPT_HAS_EMPLOYEES(4003, "该部门下存在员工，无法删除"),
+
+    /* 职位模块 5xxx */
+    DUPLICATE_NAME_JOB(5001, "职位名称已存在"),
+
     ;
 
     private final Integer code;

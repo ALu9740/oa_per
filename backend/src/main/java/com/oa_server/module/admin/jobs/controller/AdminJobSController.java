@@ -2,13 +2,13 @@ package com.oa_server.module.admin.jobs.controller;
 
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
+import com.oa_server.module.admin.jobs.dto.AdminAddJobDTO;
 import com.oa_server.module.admin.jobs.dto.AdminJobQueryDTO;
 import com.oa_server.module.admin.jobs.service.AdminJobSService;
 import com.oa_server.module.admin.jobs.vo.AdminJobVO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 职位管理接口
@@ -28,6 +28,15 @@ public class AdminJobSController {
     @GetMapping("/job-list")
     public Result<PageResult<AdminJobVO>> getJobList(AdminJobQueryDTO adminJobQueryDTO) {
         return Result.success(adminJobSService.getJobList(adminJobQueryDTO));
+    }
+
+    /**
+     * 新增职位
+     */
+    @PostMapping("/job-add")
+    public Result<Void> addJob(@Valid @RequestBody AdminAddJobDTO adminAddJobDTO) {
+        adminJobSService.addJob(adminAddJobDTO);
+        return Result.success();
     }
 
 }

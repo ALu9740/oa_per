@@ -17,4 +17,8 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface JobSMapper extends BaseMapper<Job> {
     Page<AdminJobVO> selectJobList(Page<AdminJobVO> page,@Param("adminJobQueryDTO") AdminJobQueryDTO adminJobQueryDTO);
+
+    Job selectJobByName(@Param("jobName") String jobName);
+
+    void addJob(Job job);
 }
