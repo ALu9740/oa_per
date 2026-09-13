@@ -1,12 +1,12 @@
 <template>
-  <div class="dept-page">
+  <div class="job-page">
     <!-- 搜索栏 -->
     <section class="search-card">
       <el-form :model="query" inline class="search-form" @submit.prevent>
-        <el-form-item label="部门名称">
+        <el-form-item label="职位名称">
           <el-input
-            v-model.trim="query.name"
-            placeholder="请输入部门名称"
+            v-model.trim="query.jobName"
+            placeholder="请输入职位名称"
             clearable
             style="width: 180px"
             @keyup.enter="handleSearch"
@@ -56,7 +56,7 @@
         <div class="toolbar-left">
           <el-button type="primary" @click="openAdd">
             <el-icon><Plus /></el-icon>
-            新增部门
+            新增职位
           </el-button>
           <el-button
             type="danger"
@@ -77,12 +77,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="46" />
-        <el-table-column prop="deptName" label="部门名称" min-width="140" />
-        <el-table-column label="部门描述" min-width="240" show-overflow-tooltip>
-          <template #default="{ row }">
-            {{ row.description || '—' }}
-          </template>
-        </el-table-column>
+        <el-table-column prop="jobName" label="职位名称" min-width="160" />
         <el-table-column label="创建时间" min-width="160">
           <template #default="{ row }">
             {{ formatDateTime(row.createdAt) }}
@@ -117,8 +112,8 @@
     <!-- 新增/编辑对话框 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="isEdit ? '编辑部门信息' : '新增部门'"
-      width="480px"
+      :title="isEdit ? '编辑职位信息' : '新增职位'"
+      width="440px"
       :close-on-click-modal="false"
       @closed="resetDialogForm"
     >
@@ -128,24 +123,25 @@
         :rules="rules"
         label-width="80px"
       >
-        <el-form-item label="部门名称" prop="deptName">
+        <el-form-item label="职位名称" prop="jobName">
           <el-input
-            v-model.trim="form.deptName"
-            placeholder="请输入部门名称"
+            v-model.trim="form.jobName"
+            placeholder="请输入职位名称"
             maxlength="32"
             show-word-limit
           />
         </el-form-item>
 
-        <el-form-item label="部门描述" prop="deptDesc">
-          <el-input
-            v-model.trim="form.deptDesc"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入部门描述（选填）"
-            maxlength="200"
-            show-word-limit
+        <el-form-item label="排序" prop="sort">
+          <el-input-number
+            v-model="form.sort"
+            :min="0"
+            :max="9999"
+            :step="1"
+            step-strictly
+            style="width: 180px"
           />
+          <div class="sort-tip">数值越小越靠前</div>
         </el-form-item>
       </el-form>
 
@@ -164,10 +160,10 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
 import {
-  getDeptList,
-  addDept,
-  editDept,
-  batchDeleteDept,
+  getJobList,
+  addJob,
+  editJob,
+  batchDeleteJob,
 } from '../api/admin'
 
 const loading = ref(false)
@@ -176,7 +172,7 @@ const total = ref(0)
 const page = ref(1)
 const size = ref(10)
 
-const query = reactive({ name: '' })
+const query = reactive({ jobName: '' })
 const createdAtRange = ref(null)
 const updatedAtRange = ref(null)
 
@@ -195,7 +191,7 @@ async function loadList() {
       page: page.value,
       size: size.value,
     }
-    if (query.name) params.name = query.name
+    if (query.jobName) params.jobName = query.jobName
     if (createdAtRange.value?.length === 2) {
       params.createdAtStart = `${createdAtRange.value[0]}T00:00:00`
       params.createdAtEnd = `${createdAtRange.value[1]}T23:59:59`
@@ -205,7 +201,7 @@ async function loadList() {
       params.updatedAtEnd = `${updatedAtRange.value[1]}T23:59:59`
     }
 
-    const data = await getDeptList(params)
+    const data = await getJobList(params)
     records.value = data.records || []
     total.value = Number(data.total || 0)
   } catch (e) {
@@ -221,7 +217,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  query.name = ''
+  query.jobName = ''
   createdAtRange.value = null
   updatedAtRange.value = null
   page.value = 1
@@ -245,16 +241,19 @@ const submitting = ref(false)
 const formRef = ref()
 const form = reactive({
   id: null,
-  deptName: '',
-  deptDesc: '',
+  jobName: '',
+  sort: 0,
 })
 
 const rules = {
-  deptName: [
-    { required: true, message: '请输入部门名称', trigger: 'blur' },
-    { max: 32, message: '部门名称长度不能超过32个字符', trigger: 'blur' },
+  jobName: [
+    { required: true, message: '请输入职位名称', trigger: 'blur' },
+    { max: 32, message: '职位名称长度不能超过32个字符', trigger: 'blur' },
   ],
-  deptDesc: [{ max: 200, message: '部门描述长度不能超过200个字符', trigger: 'blur' }],
+  sort: [
+    { required: true, message: '请输入排序值', trigger: 'blur' },
+    { type: 'integer', min: 0, message: '排序值必须为不小于 0 的整数', trigger: 'blur' },
+  ],
 }
 
 function openAdd() {
@@ -266,8 +265,8 @@ function openEdit(row) {
   isEdit.value = true
   Object.assign(form, {
     id: row.id,
-    deptName: row.deptName,
-    deptDesc: row.description || '',
+    jobName: row.jobName,
+    sort: row.sort ?? 0,
   })
   dialogVisible.value = true
 }
@@ -276,8 +275,8 @@ function resetDialogForm() {
   formRef.value?.resetFields()
   Object.assign(form, {
     id: null,
-    deptName: '',
-    deptDesc: '',
+    jobName: '',
+    sort: 0,
   })
 }
 
@@ -288,20 +287,20 @@ async function handleSubmit() {
   submitting.value = true
   try {
     if (isEdit.value) {
-      // 后端编辑接口字段：id / name / description
-      await editDept({
+      // 后端编辑接口字段：id / name / sort
+      await editJob({
         id: form.id,
-        name: form.deptName,
-        description: form.deptDesc,
+        name: form.jobName,
+        sort: form.sort,
       })
-      ElMessage.success('部门信息已更新')
+      ElMessage.success('职位信息已更新')
     } else {
-      // 后端新增接口字段：deptName / deptDesc
-      await addDept({
-        deptName: form.deptName,
-        deptDesc: form.deptDesc,
+      // 后端新增接口字段：jobName / sort
+      await addJob({
+        jobName: form.jobName,
+        sort: form.sort,
       })
-      ElMessage.success('新增部门成功')
+      ElMessage.success('新增职位成功')
     }
     dialogVisible.value = false
     loadList()
@@ -312,12 +311,12 @@ async function handleSubmit() {
   }
 }
 
-// ---------- 删除（存在员工的部门由后端校验并拦截）----------
+// ---------- 删除（存在员工的职位由后端校验并拦截）----------
 
 async function handleDelete(row) {
   try {
     await ElMessageBox.confirm(
-      `确定要删除部门「${row.deptName}」吗？若该部门下存在员工将无法删除。`,
+      `确定要删除职位「${row.jobName}」吗？若该职位下存在员工将无法删除。`,
       '删除确认',
       { type: 'warning' },
     )
@@ -326,21 +325,21 @@ async function handleDelete(row) {
   }
 
   try {
-    await batchDeleteDept([row.id])
+    await batchDeleteJob([row.id])
     ElMessage.success('删除成功')
     if (records.value.length === 1 && page.value > 1) {
       page.value -= 1
     }
     loadList()
   } catch (e) {
-    /* 错误已由拦截器统一提示（含"该部门下存在员工，无法删除"） */
+    /* 错误已由拦截器统一提示（含"该职位下存在员工，无法删除"） */
   }
 }
 
 async function handleBatchDelete() {
   try {
     await ElMessageBox.confirm(
-      `确定要删除选中的 ${selectedIds.value.length} 个部门吗？若所选部门下存在员工将无法删除。`,
+      `确定要删除选中的 ${selectedIds.value.length} 个职位吗？若所选职位下存在员工将无法删除。`,
       '批量删除确认',
       { type: 'warning' },
     )
@@ -349,14 +348,14 @@ async function handleBatchDelete() {
   }
 
   try {
-    await batchDeleteDept(selectedIds.value)
+    await batchDeleteJob(selectedIds.value)
     ElMessage.success('批量删除成功')
     if (records.value.length === selectedIds.value.length && page.value > 1) {
       page.value -= 1
     }
     loadList()
   } catch (e) {
-    /* 错误已由拦截器统一提示（含"该部门下存在员工，无法删除"） */
+    /* 错误已由拦截器统一提示（含"该职位下存在员工，无法删除"） */
   }
 }
 
@@ -398,5 +397,13 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
+}
+
+.sort-tip {
+  width: 100%;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #a9aeb8;
 }
 </style>

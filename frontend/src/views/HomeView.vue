@@ -157,6 +157,7 @@ const modules = [
     title: '职位管理',
     desc: '职位基础数据统一维护',
     icon: Suitcase,
+    path: '/jobs',
   },
 ]
 </script>

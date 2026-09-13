@@ -55,6 +55,12 @@ const routes = [
         component: () => import('../views/DeptView.vue'),
         meta: { title: '部门管理', requiresAuth: true, requiresAdmin: true },
       },
+      {
+        path: 'jobs',
+        name: 'Jobs',
+        component: () => import('../views/JobView.vue'),
+        meta: { title: '职位管理', requiresAuth: true, requiresAdmin: true },
+      },
     ],
   },
   {

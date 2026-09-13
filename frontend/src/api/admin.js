@@ -47,3 +47,21 @@ export function editDept(data) {
 export function batchDeleteDept(deptIds) {
   return request.put('/admin/depts/dept-batch-delete', { deptIds })
 }
+
+// 职位管理（管理员）
+
+export function getJobList(params) {
+  return request.get('/admin/jobs/job-list', { params })
+}
+
+export function addJob(data) {
+  return request.post('/admin/jobs/job-add', data)
+}
+
+export function editJob(data) {
+  return request.put('/admin/jobs/job-edit', data)
+}
+
+export function batchDeleteJob(jobIds) {
+  return request.delete('/admin/jobs/job-batch-delete', { data: { jobIds } })
+}

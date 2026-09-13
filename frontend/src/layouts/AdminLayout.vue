@@ -33,11 +33,10 @@
               <span>部门管理</span>
             </template>
           </el-menu-item>
-          <el-menu-item index="jobs" disabled>
+          <el-menu-item index="/jobs">
             <el-icon><Suitcase /></el-icon>
             <template #title>
               <span>职位管理</span>
-              <span class="menu-tag">开发中</span>
             </template>
           </el-menu-item>
         </template>
@@ -151,6 +150,7 @@ const isAdmin = computed(() => user?.roleType === 1)
 const activeMenu = computed(() => {
   if (route.path.startsWith('/employees')) return '/employees'
   if (route.path.startsWith('/depts')) return '/depts'
+  if (route.path.startsWith('/jobs')) return '/jobs'
   return '/home'
 })
 
@@ -173,7 +173,7 @@ const searchMenus = computed(() => {
     items.push(
       { title: '员工管理', path: '/employees', icon: User },
       { title: '部门管理', path: '/depts', icon: OfficeBuilding },
-      { title: '职位管理', icon: Suitcase, disabled: true },
+      { title: '职位管理', path: '/jobs', icon: Suitcase },
     )
   }
   return items
