@@ -8,7 +8,7 @@ import com.oa_server.module.admin.emps.vo.OptionVO;
 import java.util.List;
 
 /**
- * 员工管理 服务实现
+ * 员工管理服务接口
  *
  * @author Alu
  * @date 2026-09-12

@@ -8,7 +8,7 @@ import com.oa_server.module.admin.depts.vo.AdminDeptVO;
 import com.oa_server.module.admin.depts.dto.AdminAddDeptDTO;
 
 /**
- * 部门管理 服务实现
+ * 部门管理服务接口
  *
  * @author Alu
  * @date 2026-09-12
