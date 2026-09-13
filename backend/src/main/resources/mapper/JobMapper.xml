@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oa_server.module.admin.jobs.mapper.JobSMapper">
+    <!-- 通用结果映射 -->
+    <resultMap id="JobResultMapper" type="com.oa_server.module.admin.jobs.entity.Job">
+        <id column="id" property="id"/>
+        <result column="job_name" property="jobName"/>
+        <result column="sort" property="sort"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <select id="selectJobList" resultType="com.oa_server.module.admin.jobs.vo.AdminJobVO">
+        SELECT j.id          AS id,
+        j.job_name   AS jobName,
+        j.sort AS sort,
+        j.created_at  AS createdAt,
+        j.updated_at  AS updatedAt
+        FROM `job` j
+        WHERE j.is_deleted = 0
+        <!-- 职位名称模糊查询 -->
+        <if test="adminJobQueryDTO.jobName != null and adminJobQueryDTO.jobName != ''">
+            AND j.job_name LIKE CONCAT('%', #{adminJobQueryDTO.jobName}, '%')
+        </if>
+        <!-- 创建时间范围 -->
+        <if test="adminJobQueryDTO.createdAtStart != null">
+            AND j.created_at <![CDATA[ >= ]]> #{adminJobQueryDTO.createdAtStart}
+        </if>
+        <if test="adminJobQueryDTO.createdAtEnd != null">
+            AND j.created_at <![CDATA[ <= ]]> #{adminJobQueryDTO.createdAtEnd}
+        </if>
+        <!-- 更新时间范围 -->
+        <if test="adminJobQueryDTO.updatedAtStart != null">
+            AND j.updated_at <![CDATA[ >= ]]> #{adminJobQueryDTO.updatedAtStart}
+        </if>
+        <if test="adminJobQueryDTO.updatedAtEnd != null">
+            AND j.updated_at <![CDATA[ <= ]]> #{adminJobQueryDTO.updatedAtEnd}
+        </if>
+        ORDER BY j.sort ASC, j.updated_at ASC
+    </select>
+
+</mapper>
