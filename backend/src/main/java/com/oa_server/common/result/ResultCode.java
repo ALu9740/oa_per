@@ -53,6 +53,9 @@ public enum ResultCode {
     NOT_FOUND_JOB(5002, "职位不存在"),
     JOB_HAS_EMPLOYEES(5003, "该职位下存在员工，无法删除"),
 
+    /* AI模块 6xxx */
+    INVALID_CHAT_TYPE(6001, "会话类型非法"),
+
     ;
 
     private final Integer code;
