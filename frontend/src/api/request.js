@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getToken, clearLogin } from '../utils/auth'
+import router from '../router'
 
 const request = axios.create({
   // 优先使用环境变量 VITE_API_BASE，未配置时退回 /api（走 vite proxy）
@@ -33,8 +34,11 @@ request.interceptors.response.use(
     const result = error.response?.data
     if (error.response?.status === 401) {
       clearLogin()
-      ElMessage.error('登录已失效，请重新登录')
-      window.location.replace('/login')
+      // 用 SPA 路由跳转（而非 location.replace），保证错误提示不被整页刷新冲掉
+      if (router.currentRoute.value.path !== '/login') {
+        ElMessage.error('登录已失效，请重新登录')
+        router.replace('/login')
+      }
     } else {
       ElMessage.error(result?.message || '网络异常，请稍后重试')
     }

@@ -62,15 +62,17 @@
               <el-descriptions-item label="邮箱">
                 {{ profile.email || '—' }}
               </el-descriptions-item>
-              <el-descriptions-item label="入职时间">
-                {{ profile.hireDate || '—' }}
+              <el-descriptions-item label="部门">
+                {{ profile.deptName || '—' }}
               </el-descriptions-item>
-              <el-descriptions-item label="部门">{{ deptText }}</el-descriptions-item>
+              <el-descriptions-item label="职位">
+                {{ profile.jobName || '—' }}
+              </el-descriptions-item>
               <el-descriptions-item label="员工编号">
                 {{ profile.empNo || '—' }}
               </el-descriptions-item>
-              <el-descriptions-item label="账号状态">
-                <el-tag :type="statusTag.type" size="small">{{ statusTag.label }}</el-tag>
+              <el-descriptions-item label="入职时间">
+                {{ profile.hireDate || '—' }}
               </el-descriptions-item>
             </el-descriptions>
           </el-tab-pane>
@@ -249,11 +251,6 @@ const statusTag = computed(() => {
       return { type: 'info', label: '未知' }
   }
 })
-
-// 部门/职位名称尚无接口，先用 ID 展示，待后端补名称字段后替换
-const deptText = computed(() =>
-  profile.deptId ? `部门#${profile.deptId}` : '—',
-)
 
 async function loadProfile() {
   const currentUser = getUser() || {}

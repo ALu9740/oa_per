@@ -83,12 +83,13 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, OfficeBuilding, Suitcase } from '@element-plus/icons-vue'
-import { getUser } from '../utils/auth'
+import { getUser, updateUser } from '../utils/auth'
+import { getEmpInfo } from '../api/emp'
 
 const router = useRouter()
-const user = getUser()
+const user = ref(getUser())
 
-const isAdmin = computed(() => user?.roleType === 1)
+const isAdmin = computed(() => user.value?.roleType === 1)
 
 const now = ref(new Date())
 let clockTimer = null
@@ -106,7 +107,23 @@ onMounted(() => {
   clockTimer = setInterval(() => {
     now.value = new Date()
   }, 1000)
+  verifySession()
 })
+
+// 刷新页面时校验登录态：账号被禁用/登录失效会触发 401，由拦截器提示并跳转登录页
+async function verifySession() {
+  const empId = user.value?.id
+  if (!empId) return
+  try {
+    const data = await getEmpInfo(empId)
+    if (data) {
+      updateUser(data)
+      user.value = { ...user.value, ...data }
+    }
+  } catch (e) {
+    /* 401 已由拦截器统一处理 */
+  }
+}
 
 onBeforeUnmount(() => {
   clearInterval(clockTimer)
@@ -122,13 +139,13 @@ const greeting = computed(() => {
 })
 
 const genderText = computed(() => {
-  if (user?.gender === 1) return '男'
-  if (user?.gender === 0) return '女'
+  if (user.value?.gender === 1) return '男'
+  if (user.value?.gender === 0) return '女'
   return '—'
 })
 
 const statusTag = computed(() => {
-  switch (user?.accountStatus) {
+  switch (user.value?.accountStatus) {
     case 1:
       return { type: 'success', label: '正常' }
     case 2:
