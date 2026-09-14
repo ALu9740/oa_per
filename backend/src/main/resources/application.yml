@@ -45,3 +45,12 @@ oa_server:
     bucket: ${MINIO_BUCKET:}
     # 访问 URL 前缀
     url-prefix: ${MINIO_URL_PREFIX:/minio}
+
+# JWT 签名密钥
+jwt:
+  # 签名密钥
+  secret: ${JWT_SECRET:oa_server-dev-secret-key-change-in-production-must-be-256-bits}
+  # 访问令牌过期时间（毫秒）
+  access-token-expiration: 7200000      # 2小时
+  # 刷新令牌过期时间（毫秒）
+  refresh-token-expiration: 604800000   # 7天

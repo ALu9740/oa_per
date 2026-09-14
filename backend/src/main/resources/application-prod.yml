@@ -1,0 +1,103 @@
+server:
+  # 服务监听端口
+  port: 8097
+  tomcat:
+    # Tomcat 最大工作线程数，同时能处理的请求数上限
+    max-threads: 50
+    # Tomcat 最小空闲线程数，保证随时有线程处理新请求
+    min-spare-threads: 5
+    # 等待队列长度，当所有线程都在忙时，新请求进入队列等待，超过此数则拒绝
+    accept-count: 20
+    # 连接超时时间（毫秒）
+    connection-timeout: 20000
+
+spring:
+  datasource:
+    # MySQL 驱动类
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据库连接 URL：关闭 SSL(useSSL=false)，设置时区为上海
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:oa_per}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    # 数据库用户名
+    username: ${MYSQL_USER:root}
+    # 数据库密码
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      # 连接池最大连接数
+      maximum-pool-size: 10
+      # 连接池最小空闲连接数
+      minimum-idle: 3
+      # 获取连接的超时时间
+      connection-timeout: 30000
+      # 空闲连接存活时间
+      idle-timeout: 600000
+      # 连接最大存活时间
+      max-lifetime: 1800000
+      #设置连接初始化 SQL，强制将当前会话时区设为 +08:00，解决数据库时间与 Java 时间不一致问题
+      connection-init-sql: SET time_zone = '+08:00'
+
+  data:
+    redis:
+      # Redis 主机地址
+      host: ${REDIS_HOST}
+      # Redis 端口号
+      port: ${REDIS_PORT:6379}
+      # Redis 密码
+      password: ${REDIS_PASSWORD}
+      # 使用的数据库索引
+      database: ${REDIS_DB:12}
+      lettuce:
+        pool:
+          # Redis 连接池最大连接数
+          max-active: 16
+          # 最大空闲连接数
+          max-idle: 8
+          # 最小空闲连接数
+          min-idle: 2
+          # 获取连接最大等待时间
+          max-wait: 2000ms
+
+  mail:
+    # 163 邮箱 SMTP 服务器地址
+    host: smtp.163.com
+    # SSL 加密端口
+    port: 465
+    # 发件人邮箱账号
+    username: ${MAIL_USERNAME}
+    # 发件人邮箱授权码
+    password: ${MAIL_PASSWORD}
+    # 默认编码格式
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          # 开启 SMTP 认证
+          auth: true
+          ssl:
+            # 开启 SSL 加密
+            enable: true
+          socketFactory:
+            # 指定 SSL Socket 工厂类
+            class: javax.net.ssl.SSLSocketFactory
+            # 指定 SSL 端口
+            port: 465
+          starttls:
+            # 开启 STARTTLS
+            enable: true
+
+logging:
+  level:
+    # 全局日志级别
+    root: warn
+    # 业务包日志级别设为 info
+    com.oa_server: info
+    # Spring Web 日志设为 warn
+    org.springframework.web: warn
+  file:
+    # 日志文件路径（确保服务器 /opt/oa_per/logs/ 目录存在且有写权限）
+    name: /opt/oa_per/logs/oa_per.log
+  logback:
+    rollingpolicy:
+      # 单个日志文件最大 10MB
+      max-file-size: 10MB
+      # 日志保留 7 天
+      max-history: 7
