@@ -50,3 +50,44 @@ CREATE TABLE emp (
                      CONSTRAINT fk_emp_dept FOREIGN KEY (dept_id) REFERENCES dept (id),
                      CONSTRAINT fk_emp_job  FOREIGN KEY (job_id)  REFERENCES job  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='员工表';
+
+-- 4. AI 会话表
+CREATE TABLE ai_chat_session (
+                                 id         BIGINT       NOT NULL                  COMMENT '会话ID（雪花算法生成）',
+                                 emp_id     BIGINT       NOT NULL                  COMMENT '所属员工ID',
+                                 chat_type  VARCHAR(10)  NOT NULL                  COMMENT '会话类型（AGENT-管理员智能体/RAG-员工问答）',
+                                 title      VARCHAR(64)                            COMMENT '会话标题（取首条用户消息）',
+                                 created_at DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                 is_deleted TINYINT(1)   DEFAULT 0                 COMMENT '逻辑删除（0-未删除，1-已删除）',
+                                 PRIMARY KEY (id),
+                                 KEY idx_emp_type (emp_id, chat_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI会话表';
+
+-- 5. AI 消息表
+CREATE TABLE ai_chat_message (
+                                 id         BIGINT       NOT NULL                  COMMENT '消息ID（雪花算法生成）',
+                                 session_id BIGINT       NOT NULL                  COMMENT '所属会话ID',
+                                 role       VARCHAR(12)  NOT NULL                  COMMENT '角色（user-用户/assistant-AI）',
+                                 content    MEDIUMTEXT                             COMMENT '消息内容',
+                                 created_at DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                 is_deleted TINYINT(1)   DEFAULT 0                 COMMENT '逻辑删除（0-未删除，1-已删除）',
+                                 PRIMARY KEY (id),
+                                 KEY idx_session_id (session_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI消息表';
+
+-- 6. 知识库文档表
+CREATE TABLE kb_document (
+                             id          BIGINT       NOT NULL                COMMENT '文档ID（雪花算法生成）',
+                             file_name   VARCHAR(255) NOT NULL                COMMENT '原始文件名',
+                             minio_path  VARCHAR(255) NOT NULL                COMMENT 'MinIO 对象路径（bucket内相对路径）',
+                             chunk_count INT          DEFAULT 0               COMMENT '切分后的分块数量',
+                             status      VARCHAR(16)  DEFAULT 'PROCESSING'    COMMENT '状态（PROCESSING-处理中/READY-已入库/FAILED-失败）',
+                             error_msg   VARCHAR(255)                         COMMENT '失败原因',
+                             created_at  DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                             updated_at  DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                             is_deleted  TINYINT(1)   DEFAULT 0               COMMENT '逻辑删除（0-未删除，1-已删除）',
+                             PRIMARY KEY (id),
+                             KEY idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI知识库文档表';
