@@ -122,4 +122,10 @@
             #{id}
         </foreach>
     </update>
+
+    <!-- 查询职位名称 -->
+    <select id="selectJobName" resultType="java.lang.String">
+        SELECT job_name FROM `job` WHERE id = #{id} AND is_deleted = 0
+    </select>
+
 </mapper>

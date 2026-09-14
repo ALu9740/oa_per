@@ -39,11 +39,21 @@ public class EmpVO {
     private Long deptId;
 
     /**
+     * 部门名称
+     */
+    private String deptName;
+
+    /**
      * 职位ID
      */
      private Long jobId;
 
-     /**
+    /**
+     * 职位名称
+     */
+     private String jobName;
+
+    /**
      * 头像URL
      */
     private String avatar;

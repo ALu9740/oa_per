@@ -33,4 +33,6 @@ public interface JobSMapper extends BaseMapper<Job> {
     List<Long> selectIdsWithEmps(@Param("jobIds") List<Long> ids);
 
     void batchDeleteByIds(@Param("ids") List<Long> ids);
+
+    String selectJobName(Long jobId);
 }

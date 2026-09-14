@@ -33,4 +33,6 @@ public interface DeptSMapper extends BaseMapper<Dept> {
     void batchDeleteByIds(@Param("ids") List<Long> ids);
 
     List<Long> selectDeptIdsWithEmployees(@Param("deptIds") List<Long> deptIds);
+
+    String selectDeptName(Long deptId);
 }

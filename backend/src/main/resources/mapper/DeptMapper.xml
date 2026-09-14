@@ -128,4 +128,8 @@
         </foreach>
     </select>
 
+    <!-- 查询部门名称 -->
+    <select id="selectDeptName" resultType="string">
+        SELECT dept_name FROM `dept` WHERE id = #{deptId} AND is_deleted = 0 LIMIT 1
+    </select>
 </mapper>

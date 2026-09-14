@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
+import com.oa_server.module.admin.depts.mapper.DeptSMapper;
+import com.oa_server.module.admin.jobs.mapper.JobSMapper;
 import com.oa_server.module.auth.dto.CompleteProfileDTO;
 import com.oa_server.module.emp.dto.ChangePasswordDTO;
 import com.oa_server.module.emp.dto.UpdateProfileDTO;
@@ -47,6 +49,8 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
 
     private final FileStorageService fileStorageService;
     private final PasswordEncoder passwordEncoder;
+    private final DeptSMapper deptSMapper;
+    private final JobSMapper jobSMapper;
 
     @Override
     public EmpVO empToEmpVO(Emp emp) {
@@ -109,6 +113,11 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         }
 
         EmpVO empVO = empToEmpVO(emp);
+        //部门名称
+        empVO.setDeptName(deptSMapper.selectDeptName(emp.getDeptId()));
+        //职位名称
+        empVO.setJobName(jobSMapper.selectJobName(emp.getJobId()));
+
         log.info("[根据员工ID获取员工资料] id={} 员工资料={}", empId, empVO);
         return empVO;
     }
