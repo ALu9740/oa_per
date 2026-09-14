@@ -67,7 +67,15 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         //用 id 查最新账号
         Emp emp = empMapper.findById(loginEmp.getId());
         if (emp == null) {
-            throw new BusinessException(ResultCode.NOT_FOUND);
+            throw new BusinessException(ResultCode.EMP_NOT_FOUND);
+        }
+
+        //校验手机号是否重复
+        if (completeProfileDTO.getPhone() != null){
+            Emp exitByPhoneEmp = empMapper.findByPhone(completeProfileDTO.getPhone());
+            if (exitByPhoneEmp != null) {
+                throw new BusinessException(ResultCode.PHONE_EXISTS);
+            }
         }
 
         int rows = empMapper.completeProfile(
