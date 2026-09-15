@@ -39,4 +39,13 @@ public class AiSessionController {
     public Result<List<AiChatMessageVO>> messages(@PathVariable Long id) {
         return Result.success(chatSessionService.listMessages(id));
     }
+
+    /**
+     * 删除会话
+     */
+    @PutMapping("/{id}/delete")
+    public Result<Void> deleteSession(@PathVariable Long id) {
+        chatSessionService.deleteSession(id);
+        return Result.success();
+    }
 }

@@ -30,4 +30,11 @@ public interface ChatSessionService {
      * @return 会话消息列表
      */
     List<AiChatMessageVO> listMessages(Long sessionId);
+
+    /**
+     * 删除会话
+     *
+     * @param sessionId 会话 ID
+     */
+    void deleteSession(Long sessionId);
 }

@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -94,5 +95,18 @@ public class ChatSessionServiceImpl implements ChatSessionService {
             aiChatMessageVO.setCreatedAt(aiChatMessage.getCreatedAt());
             return aiChatMessageVO;
         }).toList();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteSession(Long sessionId) {
+        //获取当前登录员工ID
+        Long empId = SecurityUtils.getCurrentEmpId();
+        AiChatSession aiChatSession = aiChatSessionMapper.selectById(sessionId);
+        if (aiChatSession == null || !Objects.equals(aiChatSession.getEmpId(), empId)) {
+            throw new BusinessException(ResultCode.NOT_FOUND);
+        }
+        aiChatSessionMapper.deleteById(sessionId);
+        log.info("[AI] 删除会话：sessionId={}, empId={}", sessionId, empId);
     }
 }
