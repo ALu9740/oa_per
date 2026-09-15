@@ -2,8 +2,11 @@ package com.oa_server.module.admin.kb.service.impl;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oa_server.common.exception.BusinessException;
+import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.ResultCode;
 import com.oa_server.module.admin.kb.entity.KbDocument;
 import com.oa_server.module.admin.kb.enums.KbDocumentStatusEnum;
@@ -108,6 +111,23 @@ public class KbServiceImpl implements KbService {
         }
         kbDocumentMapper.updateById(doc);
         return toVO(doc);
+    }
+
+    @Override
+    public PageResult<KbDocumentVO> list(String fileName, Long page, Long size) {
+        // 分页查询
+        Page<KbDocument> kbDocumentPage = new Page<>(
+                page == null ? 1L : page,
+                size == null ? 10L : Math.min(size,100L));
+        // 分页查询知识库文档
+        Page<KbDocument> documentPage = kbDocumentMapper.selectPage(kbDocumentPage,
+                new LambdaQueryWrapper<KbDocument>()
+                        .like(StrUtil.isNotBlank(fileName), KbDocument::getFileName, fileName)
+                        .orderByDesc(KbDocument::getId));
+        // 转换为VO列表
+        List<KbDocumentVO> kbDocumentVOList = documentPage.getRecords().stream().map(this::toVO).toList();
+        // 返回分页结果集
+        return PageResult.of(documentPage.getTotal(), documentPage.getCurrent(), documentPage.getSize(), kbDocumentVOList);
     }
 
     /**

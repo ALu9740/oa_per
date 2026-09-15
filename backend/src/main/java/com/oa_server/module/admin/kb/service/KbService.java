@@ -1,5 +1,6 @@
 package com.oa_server.module.admin.kb.service;
 
+import com.oa_server.common.result.PageResult;
 import com.oa_server.module.admin.kb.vo.KbDocumentVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,4 +18,14 @@ public interface KbService {
      * @return 文档VO
      */
     KbDocumentVO upload(MultipartFile file);
+
+    /**
+     * 分页查询知识库文档
+     *
+     * @param fileName 文档名称
+     * @param page 分页码
+     * @param size 分页大小
+     * @return 分页结果集
+     */
+    PageResult<KbDocumentVO> list(String fileName, Long page, Long size);
 }

@@ -1,13 +1,11 @@
 package com.oa_server.module.admin.kb.controller;
 
+import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
 import com.oa_server.module.admin.kb.service.KbService;
 import com.oa_server.module.admin.kb.vo.KbDocumentVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -29,5 +27,15 @@ public class KbController {
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public Result<KbDocumentVO> upload(@RequestParam("file") MultipartFile file) {
         return Result.success("上传成功", kbService.upload(file));
+    }
+
+    /**
+     * 分页查询知识库文档
+     */
+    @GetMapping("/list")
+    public Result<PageResult<KbDocumentVO>> list(@RequestParam(required = false) String fileName,
+                                                 @RequestParam(required = false) Long page,
+                                                 @RequestParam(required = false) Long size) {
+        return Result.success(kbService.list(fileName, page, size));
     }
 }
