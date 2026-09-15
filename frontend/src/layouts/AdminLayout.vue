@@ -20,7 +20,25 @@
           <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
         </el-menu-item>
+        <el-menu-item index="/ai/ask">
+          <el-icon><ChatDotRound /></el-icon>
+          <template #title>
+            <span>AI 问答</span>
+          </template>
+        </el-menu-item>
         <template v-if="isAdmin">
+          <el-menu-item index="/ai/agent">
+            <el-icon><MagicStick /></el-icon>
+            <template #title>
+              <span>智能助手</span>
+            </template>
+          </el-menu-item>
+          <el-menu-item index="/ai/kb">
+            <el-icon><Collection /></el-icon>
+            <template #title>
+              <span>知识库管理</span>
+            </template>
+          </el-menu-item>
           <el-menu-item index="/employees">
             <el-icon><User /></el-icon>
             <template #title>
@@ -138,6 +156,9 @@ import {
   ArrowDown,
   SwitchButton,
   Search,
+  ChatDotRound,
+  MagicStick,
+  Collection,
 } from '@element-plus/icons-vue'
 import { getUser, clearLogin, getRefreshToken } from '../utils/auth'
 import { logout } from '../api/auth'
@@ -151,6 +172,9 @@ const activeMenu = computed(() => {
   if (route.path.startsWith('/employees')) return '/employees'
   if (route.path.startsWith('/depts')) return '/depts'
   if (route.path.startsWith('/jobs')) return '/jobs'
+  if (route.path.startsWith('/ai/agent')) return '/ai/agent'
+  if (route.path.startsWith('/ai/ask')) return '/ai/ask'
+  if (route.path.startsWith('/ai/kb')) return '/ai/kb'
   return '/home'
 })
 
@@ -168,9 +192,14 @@ const searchWrapRef = ref()
 const searchInputRef = ref()
 
 const searchMenus = computed(() => {
-  const items = [{ title: '首页', path: '/home', icon: HomeFilled }]
+  const items = [
+    { title: '首页', path: '/home', icon: HomeFilled },
+    { title: 'AI 问答', path: '/ai/ask', icon: ChatDotRound },
+  ]
   if (isAdmin.value) {
     items.push(
+      { title: '智能助手', path: '/ai/agent', icon: MagicStick },
+      { title: '知识库管理', path: '/ai/kb', icon: Collection },
       { title: '员工管理', path: '/employees', icon: User },
       { title: '部门管理', path: '/depts', icon: OfficeBuilding },
       { title: '职位管理', path: '/jobs', icon: Suitcase },

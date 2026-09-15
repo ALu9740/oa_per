@@ -61,6 +61,24 @@ const routes = [
         component: () => import('../views/JobView.vue'),
         meta: { title: '职位管理', requiresAuth: true, requiresAdmin: true },
       },
+      {
+        path: 'ai/agent',
+        name: 'AgentChat',
+        component: () => import('../views/AiChatView.vue'),
+        meta: { title: '智能助手', requiresAuth: true, requiresAdmin: true, chatType: 'AGENT' },
+      },
+      {
+        path: 'ai/ask',
+        name: 'RagChat',
+        component: () => import('../views/AiChatView.vue'),
+        meta: { title: 'AI 问答', requiresAuth: true, chatType: 'RAG' },
+      },
+      {
+        path: 'ai/kb',
+        name: 'Kb',
+        component: () => import('../views/KbView.vue'),
+        meta: { title: '知识库管理', requiresAuth: true, requiresAdmin: true },
+      },
     ],
   },
   {
