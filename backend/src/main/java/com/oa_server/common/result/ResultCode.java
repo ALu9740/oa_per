@@ -56,7 +56,8 @@ public enum ResultCode {
     /* AI模块 6xxx */
     INVALID_CHAT_TYPE(6001, "会话类型非法"),
     NOT_FOUND_CHAT_SESSION(6002, "会话不存在"),
-
+    INVALID_CHAT_SESSION_TYPE(6003, "会话类型不匹配"),
+    AI_SERVICE_ERROR(6004, "AI 服务异常，请稍后重试"),
     ;
 
     private final Integer code;

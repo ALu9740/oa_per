@@ -2,6 +2,7 @@ package com.oa_server.config;
 
 import com.oa_server.security.JwtAuthenticationEntryPoint;
 import com.oa_server.security.JwtAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +67,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+                        // 只放行 ASYNC 类型，客户端 REQUEST 类型请求仍然会走 JWT 鉴权
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                         // CORS 预检请求全部放行
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // 白名单：登录/注册等无需登录
