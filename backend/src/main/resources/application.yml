@@ -24,17 +24,25 @@ spring:
           model: ${AI_DASHSCOPE_EMBEDDING_MODEL:text-embedding-v4}
           # 嵌入模型的维度
           dimensions: ${AI_EMBEDDING_DIMENSIONS:1024}
-      # 向量数据库配置
-      vectorstore:
-        qdrant:
-          # qdrant 主机地址
-          host: ${QDRANT_HOST:localhost}
-          # qdrant 端口号
-          port: ${QDRANT_PORT:6334}
-          # 向量数据库集合名称
-          collection-name: ${QDRANT_COLLECTION_NAME:oa_kb}
-          # 是否初始化向量数据库模式
-          initialize-schema: ${QDRANT_INIT_SCHEMA:false}
+    # 向量数据库配置
+    vectorstore:
+      qdrant:
+        # qdrant 主机地址
+        host: ${QDRANT_HOST:localhost}
+        # qdrant 端口号
+        port: ${QDRANT_PORT:6334}
+        # 向量数据库集合名称
+        collection-name: ${QDRANT_COLLECTION_NAME:oa_kb}
+        # 是否初始化向量数据库模式
+        initialize-schema: ${QDRANT_INIT_SCHEMA:false}
+  servlet:
+    multipart:
+      # 是否启用文件上传
+      enabled: true
+      # 单个文件最大大小（MB）
+      max-file-size: 20MB
+      # 总请求大小（MB）
+      max-request-size: 30MB
 
 # SSE 流式接口的异步超时时间（5 分钟）
 mvc:

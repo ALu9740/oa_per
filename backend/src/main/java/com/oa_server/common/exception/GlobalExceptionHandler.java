@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
 import java.util.stream.Collectors;
 
 /**
@@ -132,6 +134,16 @@ public class GlobalExceptionHandler {
     public Result<Void> handleIllegalArgumentException(IllegalArgumentException e) {
         log.warn("[非法参数] {}", e.getMessage());
         return Result.error(ResultCode.PARAM_INVALID, e.getMessage());
+    }
+
+    /**
+     * 文件上传超出 Spring 限制
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException e) {
+        log.warn("[文件过大] {}", e.getMessage());
+        return Result.error(ResultCode.FILE_SIZE_EXCEEDED, "文件大小超出系统限制");
     }
 
     /**

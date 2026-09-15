@@ -58,6 +58,13 @@ public enum ResultCode {
     NOT_FOUND_CHAT_SESSION(6002, "会话不存在"),
     INVALID_CHAT_SESSION_TYPE(6003, "会话类型不匹配"),
     AI_SERVICE_ERROR(6004, "AI 服务异常，请稍后重试"),
+
+    /* 知识库模块 7xxx */
+    FILE_EMPTY(7001, "文件不能为空"),
+    FILE_FORMAT_INVALID(7002, "仅支持 pdf/doc/docx/txt/md 格式"),
+    FILE_SIZE_EXCEEDED(7003, "文件大小不能超过 20MB"),
+    FILE_READ_FAILED(7004, "文件读取失败"),
+    FILE_PARSE_FAILED(7005, "未能从文件中解析出文本（扫描版PDF请先转成文字版）"),
     ;
 
     private final Integer code;
