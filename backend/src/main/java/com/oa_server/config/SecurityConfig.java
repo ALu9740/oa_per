@@ -77,6 +77,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/emp/**").authenticated()
                         // 管理员专属：/api/admin/** 必须 ADMIN 角色
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 管理员智能体、知识库管理：仅 ADMIN 角色
+                        .requestMatchers("/api/ai/agent/**", "/api/ai/kb/**").hasRole("ADMIN")
+                        // 员工 RAG 问答、通用会话管理：登录即可
+                        .requestMatchers("/api/ai/**").authenticated()
                         // 其余：默认登录即可
                         .anyRequest().authenticated()
                 )
