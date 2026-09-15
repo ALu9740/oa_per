@@ -37,7 +37,7 @@ public class AiChatClientConfig {
                 .defaultSystem(RagPrompts.SYSTEM)
                 .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore)
                         .searchRequest(SearchRequest.builder()
-                                .similarityThreshold(0.55)
+                                .similarityThreshold(0.4)
                                 .topK(4)
                                 .build())
                         .promptTemplate(new PromptTemplate(RagPrompts.USER_TEMPLATE))

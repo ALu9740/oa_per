@@ -28,6 +28,8 @@ public final class RagPrompts {
      * 用户消息模板：QuestionAnswerAdvisor 会把检索到的分块填充到 {question_answer_context}
      */
     public static final String USER_TEMPLATE = """
+            员工问题：{query}
+            
             请根据以下公司制度文档资料，回答员工的问题。
 
             ---------------------
