@@ -1,7 +1,10 @@
 package com.oa_server.module.ai.chat.service;
 
 import com.oa_server.common.result.PageResult;
+import com.oa_server.module.ai.chat.vo.AiChatMessageVO;
 import com.oa_server.module.ai.chat.vo.AiChatSessionVO;
+
+import java.util.List;
 
 /**
  * AI会话公共服务接口
@@ -19,4 +22,12 @@ public interface ChatSessionService {
      * @return 会话分页列表
      */
     PageResult<AiChatSessionVO> listSessions(String chatType, Long page, Long size);
+
+    /**
+     * 会话消息列表
+     *
+     * @param sessionId 会话 ID
+     * @return 会话消息列表
+     */
+    List<AiChatMessageVO> listMessages(Long sessionId);
 }

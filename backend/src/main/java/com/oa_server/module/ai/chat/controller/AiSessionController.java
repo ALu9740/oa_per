@@ -3,12 +3,12 @@ package com.oa_server.module.ai.chat.controller;
 import com.oa_server.common.result.PageResult;
 import com.oa_server.common.result.Result;
 import com.oa_server.module.ai.chat.service.ChatSessionService;
+import com.oa_server.module.ai.chat.vo.AiChatMessageVO;
 import com.oa_server.module.ai.chat.vo.AiChatSessionVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * AI 会话管理接口
@@ -32,4 +32,11 @@ public class AiSessionController {
         return Result.success(chatSessionService.listSessions(chatType, page, size));
     }
 
+    /**
+     * 查询会话消息列表
+     */
+    @GetMapping("/{id}/messages")
+    public Result<List<AiChatMessageVO>> messages(@PathVariable Long id) {
+        return Result.success(chatSessionService.listMessages(id));
+    }
 }
