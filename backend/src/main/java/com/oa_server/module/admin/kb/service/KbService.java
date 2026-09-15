@@ -28,4 +28,11 @@ public interface KbService {
      * @return 分页结果集
      */
     PageResult<KbDocumentVO> list(String fileName, Long page, Long size);
+
+    /**
+     * 删除文档 （含 Qdrant 中的分块；MinIO 原文件保留）
+     *
+     * @param id 文档ID
+     */
+    void delete(Long id);
 }

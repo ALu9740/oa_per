@@ -38,4 +38,13 @@ public class KbController {
                                                  @RequestParam(required = false) Long size) {
         return Result.success(kbService.list(fileName, page, size));
     }
+
+    /**
+     * 删除文档
+     */
+    @PutMapping("/{id}/delete")
+    public Result<Void> delete(@PathVariable Long id) {
+        kbService.delete(id);
+        return Result.success();
+    }
 }

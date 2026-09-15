@@ -130,6 +130,25 @@ public class KbServiceImpl implements KbService {
         return PageResult.of(documentPage.getTotal(), documentPage.getCurrent(), documentPage.getSize(), kbDocumentVOList);
     }
 
+    @Override
+    public void delete(Long id) {
+        // 校验文档是否存在
+        KbDocument doc = kbDocumentMapper.selectById(id);
+        if (doc == null) {
+            throw new BusinessException(ResultCode.PARAM_INVALID, ResultCode.DOCUMENT_NOT_FOUND.getMessage());
+        }
+        // 逻辑删除记录（MinIO 原文件保留，便于将来重新入库）
+        kbDocumentMapper.deleteById(id);
+        // 从向量库删除该文档的所有分块
+        try {
+            vectorStore.delete(new FilterExpressionBuilder()
+                    .eq("docId", String.valueOf(id)).build());
+        } catch (Exception e) {
+            log.warn("[AI-KB] 向量库清理失败（不阻塞删除流程）：id={}, error={}", id, e.getMessage());
+        }
+        log.info("[AI-KB] 删除文档：id={}, fileName={}", id, doc.getFileName());
+    }
+
     /**
      * Tika 提取纯文本
      */

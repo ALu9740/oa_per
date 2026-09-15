@@ -65,7 +65,7 @@ public enum ResultCode {
     FILE_SIZE_EXCEEDED(7003, "文件大小不能超过 20MB"),
     FILE_READ_FAILED(7004, "文件读取失败"),
     FILE_PARSE_FAILED(7005, "未能从文件中解析出文本（扫描版PDF请先转成文字版）"),
-    ;
+    DOCUMENT_NOT_FOUND(7006, "文档不存在");
 
     private final Integer code;
     private final String message;
