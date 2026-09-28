@@ -54,6 +54,8 @@
         <router-link to="/register">立即注册</router-link>
       </footer>
     </div>
+
+    <CaptchaSlider ref="captchaRef" @success="submitLogin" />
   </AuthLayout>
 </template>
 
@@ -63,6 +65,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Message, Lock } from '@element-plus/icons-vue'
 import AuthLayout from '../components/AuthLayout.vue'
+import CaptchaSlider from '../components/CaptchaSlider.vue'
 import { login } from '../api/auth'
 import { saveLoginVO } from '../utils/auth'
 
@@ -70,6 +73,7 @@ const router = useRouter()
 const route = useRoute()
 
 const formRef = ref()
+const captchaRef = ref()
 const loading = ref(false)
 const form = reactive({
   email: '',
@@ -90,9 +94,13 @@ async function handleLogin() {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
 
+  captchaRef.value.open()
+}
+
+async function submitLogin(captchaToken) {
   loading.value = true
   try {
-    const data = await login({ email: form.email, password: form.password })
+    const data = await login({ email: form.email, password: form.password, captchaToken })
     saveLoginVO(data)
 
     if (data.empVO?.accountStatus === 2) {

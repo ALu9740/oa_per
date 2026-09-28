@@ -136,6 +136,8 @@
         </el-form-item>
       </el-form>
     </div>
+
+    <CaptchaSlider ref="captchaRef" @success="submitRegister" />
   </AuthLayout>
 </template>
 
@@ -145,6 +147,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Message, Lock, Key } from '@element-plus/icons-vue'
 import AuthLayout from '../components/AuthLayout.vue'
+import CaptchaSlider from '../components/CaptchaSlider.vue'
 import { sendCode, verifyCode, register } from '../api/auth'
 import { saveLoginVO } from '../utils/auth'
 
@@ -163,6 +166,7 @@ const form = reactive({
 const emailFormRef = ref()
 const codeFormRef = ref()
 const passwordFormRef = ref()
+const captchaRef = ref()
 
 const emailRules = {
   email: [
@@ -275,12 +279,17 @@ async function handleRegister() {
   const valid = await passwordFormRef.value.validate().catch(() => false)
   if (!valid) return
 
+  captchaRef.value.open()
+}
+
+async function submitRegister(captchaToken) {
   loading.value = true
   try {
     const data = await register({
       email: form.email,
       password: form.password,
       code: form.code,
+      captchaToken,
     })
     saveLoginVO(data)
     stopCountdown()

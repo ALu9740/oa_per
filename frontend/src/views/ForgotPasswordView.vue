@@ -138,6 +138,8 @@
         </el-form-item>
       </el-form>
     </div>
+
+    <CaptchaSlider ref="captchaRef" @success="submitReset" />
   </AuthLayout>
 </template>
 
@@ -147,6 +149,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Message, Lock, Key } from '@element-plus/icons-vue'
 import AuthLayout from '../components/AuthLayout.vue'
+import CaptchaSlider from '../components/CaptchaSlider.vue'
 import { sendCode, verifyCode, resetPassword } from '../api/auth'
 
 const router = useRouter()
@@ -164,6 +167,7 @@ const form = reactive({
 const emailFormRef = ref()
 const codeFormRef = ref()
 const passwordFormRef = ref()
+const captchaRef = ref()
 
 const emailRules = {
   email: [
@@ -275,12 +279,17 @@ async function handleReset() {
   const valid = await passwordFormRef.value.validate().catch(() => false)
   if (!valid) return
 
+  captchaRef.value.open()
+}
+
+async function submitReset(captchaToken) {
   loading.value = true
   try {
     await resetPassword({
       email: form.email,
       password: form.password,
       code: form.code,
+      captchaToken,
     })
     stopCountdown()
     ElMessage.success('密码重置成功，请使用新密码登录')
