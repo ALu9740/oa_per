@@ -10,6 +10,7 @@ import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.ResetPasswordDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
 import com.oa_server.module.auth.service.AuthService;
+import com.oa_server.module.auth.service.CaptchaValidator;
 import com.oa_server.module.auth.vo.LoginVo;
 import com.oa_server.module.emp.entity.Emp;
 import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
@@ -65,6 +66,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmpService empService;
+    private final CaptchaValidator captchaValidator;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
@@ -106,6 +108,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public LoginVo register(RegisterDTO registerDTO) {
+        // 滑块验证码二次校验
+        captchaValidator.check(registerDTO.getCaptchaToken());
         //校验验证码
         if(!verifyCode(registerDTO.getEmail(),registerDTO.getCode())){
             throw new BusinessException(ResultCode.CODE_NOT_MATCH);
@@ -143,6 +147,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginVo login(LoginDTO loginDTO) {
+        // 滑块验证码二次校验
+        captchaValidator.check(loginDTO.getCaptchaToken());
+
         String email = loginDTO.getEmail();
 
         // 账号锁定检查（Redis 防爆破）
@@ -171,6 +178,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        // 滑块验证码二次校验
+        captchaValidator.check(resetPasswordDTO.getCaptchaToken());
         //校验验证码
         if(!verifyCode(resetPasswordDTO.getEmail(),resetPasswordDTO.getCode())){
             throw new BusinessException(ResultCode.CODE_NOT_MATCH);

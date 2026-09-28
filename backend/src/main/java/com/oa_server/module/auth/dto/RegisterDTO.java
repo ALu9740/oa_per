@@ -24,4 +24,7 @@ public class RegisterDTO {
 
     @NotBlank(message = "验证码不能为空")
     private String code;
+
+    @NotBlank(message = "请先完成滑块验证")
+    private String captchaToken;
 }

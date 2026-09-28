@@ -24,4 +24,7 @@ public class ResetPasswordDTO {
     @NotBlank(message = "密码不能为空")
     @Size(min = 6, max = 32, message = "密码长度6-32位")
     private String password;
+
+    @NotBlank(message = "请先完成滑块验证")
+    private String captchaToken;
 }

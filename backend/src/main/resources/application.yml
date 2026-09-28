@@ -96,3 +96,19 @@ jwt:
   access-token-expiration: 7200000      # 2小时
   # 刷新令牌过期时间（毫秒）
   refresh-token-expiration: 604800000   # 7天
+
+# TIANAI-CAPTCHA 滑块验证码配置
+captcha:
+  # Redis 中验证码数据的 key 前缀
+  prefix: oa:captcha
+  # 验证码待校验数据的过期时间（毫秒）：生成后 2 分钟内必须完成滑动
+  expire:
+    default: 120000
+  # 加载内置的滑块缺口模板
+  init-default-resource: true
+  # 二次校验：滑块通过后发 token，业务接口凭 token 校验
+  secondary:
+    enabled: true
+    # token 有效期（毫秒）：滑动完成到提交登录，给 5 分钟余量
+    expire: 300000
+    keyPrefix: "captcha:secondary"

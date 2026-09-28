@@ -38,6 +38,7 @@ public enum ResultCode {
     EMAIL_NOT_FOUND(2010, "邮箱不存在"),
     TOKEN_INVALID(2011, "Token 无效"),
     PHONE_EXISTS(2012, "手机号已被注册"),
+    CAPTCHA_INVALID(2013, "滑块验证未通过或已过期，请重新验证"),
 
     /* 员工模块 3xxx */
     EMP_NOT_FOUND(3001, "员工不存在"),

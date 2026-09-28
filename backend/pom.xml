@@ -24,6 +24,7 @@
         <tika.version>2.9.2</tika.version>
         <spring-ai.version>1.1.8</spring-ai.version>
         <qdrant.version>1.10.0</qdrant.version>
+        <tianai.version>1.5.5</tianai.version>
     </properties>
 
     <dependencyManagement>
@@ -40,6 +41,13 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <!-- TIANAI-CAPTCHA 行为验证码 -->
+        <dependency>
+            <groupId>cloud.tianai.captcha</groupId>
+            <artifactId>tianai-captcha-springboot-starter</artifactId>
+            <version>${tianai.version}</version>
+        </dependency>
 
         <!-- Spring AI -->
         <dependency>

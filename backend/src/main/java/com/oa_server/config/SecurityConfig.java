@@ -46,6 +46,8 @@ public class SecurityConfig {
             "/api/auth/complete-profile",
             "/api/auth/refresh",
             "/api/auth/logout",
+            "/api/captcha/generation" ,
+            "/api/captcha/check" ,
             "/minio/**"
     };
 
