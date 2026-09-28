@@ -2,21 +2,15 @@ package com.oa_server.security;
 
 import com.oa_server.module.emp.entity.Emp;
 import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * 登录员工信息封装
+ * 登录员工信息封装（存于 SaSession）
  *
  * @author Alu
  * @date 2026-09-09
  */
 @Data
-public class LoginEmp implements UserDetails {
+public class LoginEmp {
 
     /**
      * 员工id
@@ -29,16 +23,6 @@ public class LoginEmp implements UserDetails {
     private String email;
 
     /**
-     * 密码
-     */
-    private String password;
-
-    /**
-     * 头像
-     */
-    private String avatar;
-
-    /**
      * 角色类型（0-普通员工，1-管理员）
      */
     private Integer roleType;
@@ -48,48 +32,14 @@ public class LoginEmp implements UserDetails {
      */
     private Integer accountStatus;
 
+    public LoginEmp() {
+    }
+
     public LoginEmp(Emp emp) {
         this.id = emp.getId();
         this.email = emp.getEmail();
-        this.password = emp.getPassword();
-        this.avatar = emp.getAvatar();
         this.roleType = emp.getRoleType();
         this.accountStatus = emp.getAccountStatus();
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        boolean isAdmin = roleType != null && roleType == 1;
-        return Collections.singletonList(new SimpleGrantedAuthority(isAdmin ? "ROLE_ADMIN" : "ROLE_EMP"));
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return accountStatus == 1;
-    }
 }

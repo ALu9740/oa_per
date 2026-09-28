@@ -24,8 +24,8 @@ OA-PER 是一套前后端分离的轻量级 OA 人事管理系统，覆盖账号
 ### 账号与认证
 
 - 邮箱验证码注册、完善个人资料、找回密码（163 邮箱 SMTP）
-- JWT 双 Token 认证：AccessToken 2 小时 / RefreshToken 7 天，支持无感续期
-- Spring Security 统一鉴权，管理端接口强制 `ROLE_ADMIN`，前端路由守卫同步拦截
+- Sa-Token 会话认证：Token 7 天有效期（Redis 存储，重启不丢登录态），支持滚动续期
+- Sa-Token 统一鉴权（路由拦截器 + 角色校验），管理端接口强制 admin 角色，前端路由守卫同步拦截
 
 ### 基础人事管理
 
@@ -52,7 +52,7 @@ OA-PER 是一套前后端分离的轻量级 OA 人事管理系统，覆盖账号
 | 分类 | 技术 |
 | --- | --- |
 | 前端 | Vue 3.5、Vue Router 4、Element Plus 2.9、Axios、Vite 8、marked + DOMPurify |
-| 后端 | Java 17、Spring Boot 3.5、Spring Security + JJWT、MyBatis-Plus 3.5、Spring Validation、Spring Mail、Hutool |
+| 后端 | Java 17、Spring Boot 3.5、Sa-Token 1.42、MyBatis-Plus 3.5、Spring Validation、Spring Mail、Hutool |
 | 数据存储 | MySQL 8.0、Redis、MinIO、Qdrant |
 | AI | Spring AI 1.1.8（OpenAI 兼容模式）、阿里云 DashScope（qwen3.7-flash / text-embedding-v4）、Apache Tika 2.9 |
 
@@ -63,8 +63,8 @@ oa_per
 ├── backend                              # 后端服务（Spring Boot）
 │   ├── src/main/java/com/oa_server
 │   │   ├── common                       # 统一响应 Result、全局异常、实体基类
-│   │   ├── config                       # Security / AI / MinIO / Redis / Jackson / MyBatis-Plus 配置
-│   │   ├── security                     # JWT 过滤器、工具类、UserDetails 实现
+│   │   ├── config                       # Sa-Token / CORS / AI / MinIO / Redis / Jackson / MyBatis-Plus 配置
+│   │   ├── security                     # 登录用户封装、安全工具类、角色数据源
 │   │   └── module
 │   │       ├── auth                     # 注册 / 登录 / 验证码 / 找回密码 / Token 续期
 │   │       ├── emp                      # 员工资料、RAG 问答
@@ -140,7 +140,7 @@ cd backend
 copy .env.example .env    # macOS / Linux 使用 cp
 ```
 
-编辑 `.env`，填入 MySQL、Redis、MinIO、163 邮箱授权码、JWT 密钥与 DashScope API Key。环境变量加载方式见 `.env.example` 文件头部注释（IDEA EnvFile 插件 / 命令行 source / IDE 环境变量三选一）。
+编辑 `.env`，填入 MySQL、Redis、MinIO、163 邮箱授权码与 DashScope API Key。环境变量加载方式见 `.env.example` 文件头部注释（IDEA EnvFile 插件 / 命令行 source / IDE 环境变量三选一）。
 
 生成本地 HTTPS 证书并放入 `backend/src/main/resources/ssl/`：
 

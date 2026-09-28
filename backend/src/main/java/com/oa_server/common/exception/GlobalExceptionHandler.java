@@ -1,12 +1,13 @@
 package com.oa_server.common.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
 import com.oa_server.common.result.Result;
 import com.oa_server.common.result.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -107,23 +108,21 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 认证异常 (Spring Security)
+     * 未登录（Sa-Token）
      */
-    @ExceptionHandler(AuthenticationException.class)
+    @ExceptionHandler(NotLoginException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Result<Void> handleAuthenticationException(AuthenticationException e) {
-        log.warn("[认证异常] {}", e.getMessage());
-        return Result.error(ResultCode.LOGIN_EXPIRED, e.getMessage());
+    public Result <Void> handleNotLoginException (NotLoginException e) {
+        log.warn( "[未登录] {}" , e.getMessage()); return Result.error(ResultCode.LOGIN_EXPIRED);
     }
 
     /**
-     * 权限不足
+     * 角色不匹配（Sa-Token）
      */
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({NotRoleException.class, NotPermissionException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Result<Void> handleAccessDeniedException(AccessDeniedException e) {
-        log.warn("[权限不足] {}", e.getMessage());
-        return Result.error(ResultCode.FORBIDDEN);
+    public Result <Void> handleNotRoleException (Exception e) {
+        log.warn( "[权限不足] {}" , e.getMessage()); return Result.error(ResultCode.FORBIDDEN);
     }
 
     /**

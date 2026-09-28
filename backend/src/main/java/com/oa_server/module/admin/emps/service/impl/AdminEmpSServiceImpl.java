@@ -1,7 +1,9 @@
 package com.oa_server.module.admin.emps.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oa_server.common.exception.BusinessException;
@@ -17,7 +19,6 @@ import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
 import com.oa_server.module.emp.mapper.EmpMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,6 @@ import java.util.List;
 public class AdminEmpSServiceImpl implements AdminEmpSService {
 
     private final EmpMapper empMapper;
-    private final PasswordEncoder passwordEncoder;
 
     private final String DEFAULT_PASSWORD = "123456";
 
@@ -84,7 +84,7 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         emp.setGender(adminAddEmpDTO.getGender());
         emp.setEmail(adminAddEmpDTO.getEmail());
         emp.setPhone(adminAddEmpDTO.getPhone());
-        emp.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+        emp.setPassword(BCrypt.hashpw(DEFAULT_PASSWORD));
         emp.setDeptId(adminAddEmpDTO.getDeptId());
         emp.setJobId(adminAddEmpDTO.getJobId());
         emp.setHireDate(adminAddEmpDTO.getHireDate());
@@ -179,6 +179,9 @@ public class AdminEmpSServiceImpl implements AdminEmpSService {
         //账号状态
         if(ObjectUtil.isNotNull(adminUpdateAccountStatusDTO.getAccountStatus())){
             emp.setAccountStatus(adminUpdateAccountStatusDTO.getAccountStatus());
+            if(adminUpdateAccountStatusDTO.getAccountStatus().equals(EmpAccountStatusEnum.DISABLED.getCode())){
+                StpUtil.kickout(emp.getId());
+            }
         }
 
         //更新时间

@@ -1,42 +1,32 @@
 package com.oa_server.security;
 
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.stp.StpUtil;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * 安全上下文工具类
+ * 安全上下文工具类（基于 Sa-Token）
  *
  * @author Alu
  * @date 2026-09-11
  */
 public class SecurityUtils {
-    private SecurityUtils(){}
+    private SecurityUtils() {}
 
     /**
-     * 获取当前认证信息
-     */
-    public static Authentication getAuthentication() {
-        return SecurityContextHolder.getContext().getAuthentication();
-    }
-
-    /**
-     * 获取当前登录员工
-     *
-     * @return LoginEmp
-     * @throws BusinessException 未登录时抛出
+     * 获取当前登录员工（登录时存入 SaSession）
      */
     public static LoginEmp getCurrentEmp() {
-        Authentication authentication = getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (!StpUtil.isLogin()) {
             throw new BusinessException(ResultCode.LOGIN_EXPIRED);
         }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof LoginEmp loginEmp) {
-            return loginEmp;
+        SaSession session = StpUtil.getSession();
+        LoginEmp loginEmp = (LoginEmp) session.get("loginEmp");
+        if (loginEmp == null) {
+            throw new BusinessException(ResultCode.LOGIN_EXPIRED);
         }
-        throw new BusinessException(ResultCode.LOGIN_EXPIRED);
+        return loginEmp;
     }
 
     /**

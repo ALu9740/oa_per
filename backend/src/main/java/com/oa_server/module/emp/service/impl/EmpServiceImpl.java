@@ -2,6 +2,7 @@ package com.oa_server.module.emp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
@@ -22,8 +23,6 @@ import com.oa_server.security.LoginEmp;
 import com.oa_server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +47,6 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
     private final EmpMapper empMapper;
 
     private final FileStorageService fileStorageService;
-    private final PasswordEncoder passwordEncoder;
     private final DeptSMapper deptSMapper;
     private final JobSMapper jobSMapper;
 
@@ -63,8 +61,8 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
     @Transactional(rollbackFor = Exception.class)
     public void completeProfile(CompleteProfileDTO completeProfileDTO) {
         //从安全上下文拿当前登录人
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof LoginEmp loginEmp)) {
+        LoginEmp loginEmp = SecurityUtils.getCurrentEmp();
+        if (loginEmp == null) {
             throw new BusinessException(ResultCode.LOGIN_EXPIRED);
         }
 
@@ -228,7 +226,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         }
 
         // 校验旧密码
-        if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), emp.getPassword())) {
+        if (!BCrypt.checkpw(changePasswordDTO.getOldPassword(), emp.getPassword())) {
             throw new BusinessException(ResultCode.OLD_PASSWORD_ERROR);
         }
 
@@ -238,7 +236,7 @@ public class EmpServiceImpl extends ServiceImpl<EmpMapper, Emp> implements EmpSe
         }
 
         //更新密码
-        emp.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        emp.setPassword(BCrypt.hashpw(changePasswordDTO.getNewPassword()));
         emp.setUpdatedAt(LocalDateTime.now());
         empMapper.changePassword(emp);
 

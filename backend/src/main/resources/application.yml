@@ -88,14 +88,23 @@ oa_server:
     # 访问 URL 前缀
     url-prefix: ${MINIO_URL_PREFIX:/minio}
 
-# JWT 签名密钥
-jwt:
-  # 签名密钥
-  secret: ${JWT_SECRET:oa_server-dev-secret-key-change-in-production-must-be-256-bits}
-  # 访问令牌过期时间（毫秒）
-  access-token-expiration: 7200000      # 2小时
-  # 刷新令牌过期时间（毫秒）
-  refresh-token-expiration: 604800000   # 7天
+# Sa-Token 配置
+sa-token:
+  # token 名称
+  token-name: Authorization
+  # token 前缀：请求头格式 Authorization: Bearer xxx
+  token-prefix: Bearer
+  # token 有效期（秒）：7 天
+  timeout: 604800
+  # token 风格
+  token-style: uuid
+  # 关闭 cookie 模式（纯前后端分离）
+  is-read-cookie: false
+  # 尝试从请求体读取 token：关闭
+  is-read-body: false
+  # 同账号多端登录共享同一 token
+  is-concurrent: true
+  is-share: true
 
 # TIANAI-CAPTCHA 滑块验证码配置
 captcha:

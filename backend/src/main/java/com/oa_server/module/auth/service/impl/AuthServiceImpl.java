@@ -1,7 +1,8 @@
 package com.oa_server.module.auth.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.oa_server.common.exception.BusinessException;
@@ -20,16 +21,13 @@ import com.oa_server.module.emp.enums.EmpAccountStatusEnum;
 import com.oa_server.module.emp.enums.EmpRoleTypeEnum;
 import com.oa_server.module.emp.mapper.EmpMapper;
 import com.oa_server.module.emp.service.EmpService;
-import com.oa_server.security.JwtUtil;
 import com.oa_server.security.LoginEmp;
-import com.oa_server.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -55,7 +53,6 @@ public class AuthServiceImpl implements AuthService {
     private static final String LIMIT_KEY_PREFIX = "auth:sendCode:limit:";
     private static final String LOGIN_LOCK_PREFIX = "auth:login:lock";
     private static final String LOGIN_FAIL_PREFIX = "auth:login:fail:";
-    private static final String TOKEN_BLACKLIST_PREFIX = "auth:token:blacklist:";
     private static final int LOGIN_MAX_FAIL = 5;
     private static final String AGREEMENT_VERSION = "v1";
 
@@ -69,8 +66,6 @@ public class AuthServiceImpl implements AuthService {
     private final StringRedisTemplate stringRedisTemplate;
     private final JavaMailSender javaMailSender;
     private final EmpMapper empMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
     private final EmpService empService;
     private final CaptchaValidator captchaValidator;
     private final AgreementRecordMapper agreementRecordMapper;
@@ -131,7 +126,8 @@ public class AuthServiceImpl implements AuthService {
         long id = IdWorker.getId();
         emp.setId(id);
         emp.setEmail(registerDTO.getEmail());
-        emp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        emp.setPassword(BCrypt.hashpw(registerDTO.getPassword()));
+
 
         //设置账号状态为：待完善资料
         emp.setAccountStatus(EmpAccountStatusEnum.PENDING.getCode());
@@ -158,6 +154,10 @@ public class AuthServiceImpl implements AuthService {
         //删除已使用验证码
         stringRedisTemplate.delete(CODE_KEY_PREFIX + registerDTO.getEmail());
 
+        // 登录员工LoginEmp 存入SaSession
+        StpUtil.login(emp.getId());
+        StpUtil.getSession().set("loginEmp", new LoginEmp(emp));
+
         return buildLoginVO(emp);
     }
 
@@ -176,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
         // 查询用户
         Emp emp = empMapper.findByEmail(email);
 
-        if(emp == null || !passwordEncoder.matches(loginDTO.getPassword(), emp.getPassword())){
+        if(emp == null || !BCrypt.checkpw(loginDTO.getPassword(), emp.getPassword())){
             recordLoginFailure(email);
             throw new BusinessException(ResultCode.EMAIL_OR_PASSWORD_ERROR);
         }
@@ -186,6 +186,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         stringRedisTemplate.delete(LOGIN_FAIL_PREFIX + email);
+
+        //Sa-Token 登录员工,LoginEmp 存入SaSession
+        StpUtil.login(emp.getId());
+        StpUtil.getSession().set("loginEmp", new LoginEmp(emp));
 
         log.info("[登录] 用户登录成功: userId={}, email={}", emp.getId(), email);
 
@@ -206,7 +210,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ResultCode.EMAIL_NOT_FOUND);
         }
         //更新密码
-        emp.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        emp.setPassword(BCrypt.hashpw(resetPasswordDTO.getPassword()));
         //设置时间
         emp.setUpdatedAt(LocalDateTime.now());
         empMapper.resetPassword(emp);
@@ -219,79 +223,39 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginVo refresh(String refreshToken) {
-        //校验 Token 签名和有效期
-        if (!jwtUtil.validateToken(refreshToken)) {
+        // token 必须还在有效期内（7 天）
+        Object loginId = StpUtil.getLoginIdByToken(refreshToken);
+        if (loginId == null) {
             throw new BusinessException(ResultCode.TOKEN_INVALID);
         }
 
-        if (!jwtUtil.isRefreshToken(refreshToken)) {
+        Long empId = Long.parseLong(loginId.toString());
+        Emp emp = empMapper.findById(empId);
+        if (emp == null) {
             throw new BusinessException(ResultCode.TOKEN_INVALID);
         }
 
-        // 检查是否已被废弃（Redis 黑名单）
-        String tokenHash = DigestUtil.sha256Hex(refreshToken);
-        String blacklistKey = TOKEN_BLACKLIST_PREFIX + tokenHash;
-        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(blacklistKey))) {
-            throw new BusinessException(ResultCode.TOKEN_INVALID);
-        }
+        // 滚动续期：把 token 有效期重置为 7 天
+        StpUtil.renewTimeout(refreshToken, 604800);
 
-        //从 Token 解析出用户信息
-        String email = jwtUtil.getEmailFromToken(refreshToken);
-        Long empID = jwtUtil.getEmpIdFromToken(refreshToken);
-        Emp emp = empMapper.findById(empID);
-        if (emp == null || !email.equals(emp.getEmail())) {
-            throw new BusinessException(ResultCode.TOKEN_INVALID);
-        }
-
-        // 把旧的 refreshToken 加入黑名单（有效期 = refreshToken剩余过期时间）
-        long remainingTime = jwtUtil.getRemainingTime(refreshToken);
-        if (remainingTime > 0) {
-            stringRedisTemplate.opsForValue().set(blacklistKey, "1", Duration.ofMillis(remainingTime));
-        }
-
-        //生成新的 Token
         return buildLoginVO(emp);
     }
 
     @Override
     public void logout(String accessToken, String refreshTokenHeader) {
-        Long empId = null;
-
-        //从 Security 上下文获取登录人（accessToken 可能已过期，拿不到也继续处理黑名单）
-        try {
-            LoginEmp emp = SecurityUtils.getCurrentEmp();
-            empId = emp.getId();
-        } catch (Exception e) {
-            log.warn("[登出] 无有效登录态，继续处理 token 黑名单: {}", e.getMessage());
-        }
-
-        //accessToken 加入黑名单
-        if (StrUtil.isNotBlank(accessToken) && jwtUtil.validateToken(accessToken)) {
-            addToBlacklist(accessToken);
-        }
-
-        //refreshToken 也加入黑名单
-        if (StrUtil.isNotBlank(refreshTokenHeader)) {
-            String refreshToken = refreshTokenHeader.startsWith("Bearer ")
+        String token = accessToken;
+        if (StrUtil.isBlank(token) && StrUtil.isNotBlank(refreshTokenHeader)) {
+            token = refreshTokenHeader.startsWith("Bearer ")
                     ? refreshTokenHeader.substring(7) : refreshTokenHeader;
-            if (jwtUtil.validateToken(refreshToken) && jwtUtil.isRefreshToken(refreshToken)) {
-                addToBlacklist(refreshToken);
-            }
         }
-
-        log.info("[登出] 用户登出成功: userId={}", empId);
-    }
-
-    /**
-     * 把 token 加入黑名单
-     */
-    private void addToBlacklist(String token) {
-        long remainingTime = jwtUtil.getRemainingTime(token);
-        if (remainingTime > 0) {
-            String tokenHash = DigestUtil.sha256Hex(token);
-            String blacklistKey = TOKEN_BLACKLIST_PREFIX + tokenHash;
-            stringRedisTemplate.opsForValue().set(blacklistKey, "1", Duration.ofMillis(remainingTime));
+        if (StrUtil.isBlank(token)) {
+            return;
         }
+        // 从 Sa-Token 中获取登录态
+        Object loginId = StpUtil.getLoginIdByToken(token);
+        //从 Sa-Token 中移除登录态
+        StpUtil.logout(token);
+        log.info("[登出] 用户登出成功: userId={}", loginId);
     }
 
     /**
@@ -312,12 +276,16 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * 构建登录返回对象
+     * @param emp 员工信息
+     * @return LoginVo 登录VO
      */
     private LoginVo buildLoginVO(Emp emp) {
         LoginVo vo = new LoginVo();
-        vo.setAccessToken(jwtUtil.generateAccessToken(emp.getId(), emp.getEmail()));
-        vo.setRefreshToken(jwtUtil.generateRefreshToken(emp.getId(), emp.getEmail()));
-        vo.setExpiresIn(jwtUtil.getAccessTokenExpiration() / 1000);
+        // 从 Sa-Token 中获取 token
+        String token = StpUtil.getTokenValue();
+        vo.setAccessToken(token);
+        vo.setRefreshToken(token);
+        vo.setExpiresIn(7200L);
         vo.setEmpVO(empService.empToEmpVO(emp));
         return vo;
     }
