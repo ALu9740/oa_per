@@ -82,6 +82,12 @@ const routes = [
     ],
   },
   {
+    path: '/agreement/:type(user|privacy)',
+    name: 'Agreement',
+    component: () => import('../views/AgreementView.vue'),
+    meta: { title: '协议' },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../views/NotFoundView.vue'),

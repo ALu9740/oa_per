@@ -1,7 +1,9 @@
 package com.oa_server.module.auth.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -27,4 +29,8 @@ public class RegisterDTO {
 
     @NotBlank(message = "请先完成滑块验证")
     private String captchaToken;
+
+    @NotNull(message = "请阅读并同意《用户协议》和《隐私政策》")
+    @AssertTrue(message = "请阅读并同意《用户协议》和《隐私政策》")
+    private Boolean agreed;
 }

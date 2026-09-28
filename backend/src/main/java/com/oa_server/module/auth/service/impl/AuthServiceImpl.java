@@ -2,6 +2,7 @@ package com.oa_server.module.auth.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.oa_server.common.exception.BusinessException;
 import com.oa_server.common.result.ResultCode;
@@ -9,6 +10,8 @@ import com.oa_server.module.auth.dto.LoginDTO;
 import com.oa_server.module.auth.dto.RegisterDTO;
 import com.oa_server.module.auth.dto.ResetPasswordDTO;
 import com.oa_server.module.auth.dto.SendCodeDTO;
+import com.oa_server.module.auth.entity.AgreementRecord;
+import com.oa_server.module.auth.mapper.AgreementRecordMapper;
 import com.oa_server.module.auth.service.AuthService;
 import com.oa_server.module.auth.service.CaptchaValidator;
 import com.oa_server.module.auth.vo.LoginVo;
@@ -29,6 +32,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -52,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
     private static final String LOGIN_FAIL_PREFIX = "auth:login:fail:";
     private static final String TOKEN_BLACKLIST_PREFIX = "auth:token:blacklist:";
     private static final int LOGIN_MAX_FAIL = 5;
+    private static final String AGREEMENT_VERSION = "v1";
 
     private static final String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
     private static final Duration CODE_TTL = Duration.ofMinutes(5);
@@ -67,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final EmpService empService;
     private final CaptchaValidator captchaValidator;
+    private final AgreementRecordMapper agreementRecordMapper;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
@@ -138,6 +145,15 @@ public class AuthServiceImpl implements AuthService {
         emp.setUpdatedAt(LocalDateTime.now());
 
         empMapper.insertEmp(emp);
+
+        // 记录协议签署
+        AgreementRecord record = new AgreementRecord();
+        record.setEmpId(emp.getId());
+        record.setEmail(emp.getEmail());
+        record.setAgreementVersion(AGREEMENT_VERSION);
+        record.setUserIp(getClientIp());
+        record.setAgreedAt(LocalDateTime.now());
+        agreementRecordMapper.insert(record);
 
         //删除已使用验证码
         stringRedisTemplate.delete(CODE_KEY_PREFIX + registerDTO.getEmail());
@@ -346,5 +362,19 @@ public class AuthServiceImpl implements AuthService {
         return sb.toString();
     }
 
-
+    /**
+     * 获取客户端IP（协议签署留痕用）
+     */
+    private String getClientIp() {
+        try {
+            ServletRequestAttributes attrs =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                return JakartaServletUtil.getClientIP(attrs.getRequest());
+            }
+        } catch (Exception e) {
+            log.warn("[注册] 获取客户端IP失败: {}", e.getMessage());
+        }
+        return null;
+    }
 }

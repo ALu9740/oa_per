@@ -121,6 +121,25 @@
           />
         </el-form-item>
 
+        <el-form-item class="agreement-item">
+          <el-checkbox v-model="agreed" class="agreement-check">
+            我已阅读并同意
+            <router-link
+              to="/agreement/user"
+              target="_blank"
+              class="agreement-link"
+              @click.stop
+            >《用户协议》</router-link>
+            和
+            <router-link
+              to="/agreement/privacy"
+              target="_blank"
+              class="agreement-link"
+              @click.stop
+            >《隐私政策》</router-link>
+          </el-checkbox>
+        </el-form-item>
+
         <el-form-item>
           <div class="button-group">
             <el-button class="group-button" @click="activeStep = 1">上一步</el-button>
@@ -129,6 +148,7 @@
               class="group-button"
               native-type="submit"
               :loading="loading"
+              :disabled="!agreed"
             >
               注 册
             </el-button>
@@ -156,6 +176,7 @@ const router = useRouter()
 const activeStep = ref(0)
 const loading = ref(false)
 const sending = ref(false)
+const agreed = ref(false)
 const form = reactive({
   email: '',
   code: '',
@@ -279,6 +300,11 @@ async function handleRegister() {
   const valid = await passwordFormRef.value.validate().catch(() => false)
   if (!valid) return
 
+  if (!agreed.value) {
+    ElMessage.warning('请阅读并同意《用户协议》和《隐私政策》')
+    return
+  }
+
   captchaRef.value.open()
 }
 
@@ -290,6 +316,7 @@ async function submitRegister(captchaToken) {
       password: form.password,
       code: form.code,
       captchaToken,
+      agreed: true,
     })
     saveLoginVO(data)
     stopCountdown()
@@ -347,6 +374,30 @@ async function submitRegister(captchaToken) {
 
 .block-button {
   width: 100%;
+}
+
+.agreement-item {
+  margin-bottom: 12px;
+}
+
+.agreement-item :deep(.el-form-item__content) {
+  line-height: 1.6;
+}
+
+.agreement-check {
+  height: auto;
+  align-items: flex-start;
+  white-space: normal;
+  font-size: 13px;
+  color: #4e5969;
+}
+
+.agreement-link {
+  color: #2563eb;
+}
+
+.agreement-link:hover {
+  opacity: 0.8;
 }
 
 .button-group {

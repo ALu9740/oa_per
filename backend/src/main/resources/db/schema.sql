@@ -91,3 +91,18 @@ CREATE TABLE kb_document (
                              PRIMARY KEY (id),
                              KEY idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI知识库文档表';
+
+-- 7. 协议签署记录表
+CREATE TABLE agreement_record (
+                                  id                BIGINT       NOT NULL              COMMENT '记录ID（雪花算法生成）',
+                                  emp_id            BIGINT       NOT NULL              COMMENT '员工ID',
+                                  email             VARCHAR(50)  NOT NULL              COMMENT '注册邮箱',
+                                  agreement_version VARCHAR(20)  NOT NULL              COMMENT '协议版本（如 v1）',
+                                  user_ip           VARCHAR(50)                        COMMENT '注册时IP（留痕用）',
+                                  agreed_at         DATETIME     NOT NULL              COMMENT '同意时间',
+                                  created_at        DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                  updated_at  DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  is_deleted  TINYINT(1)   DEFAULT 0               COMMENT '逻辑删除（0-未删除，1-已删除）',
+                                  PRIMARY KEY (id),
+                                  KEY idx_emp_id (emp_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='协议签署记录表';
